@@ -52,9 +52,14 @@ func tzOrUTC(tz string) string {
 // query moment (transits, sade sati, tara bala, dual-moment narratives):
 // natal data under "birth.*", the moment as unprefixed date/tz.
 //
-// The birth place is also sent unprefixed as lat/lon: several handlers
-// (narrative horoscopes, transit ashtakavarga, varshaphal themes) read the
-// natal location that way and reject the request without it.
+// The birth place is also sent unprefixed as lat/lon: some handlers
+// (narrative transit ashtakavarga, varshaphal themes) read the natal
+// location that way and reject the request without it.
+//
+// Use this ONLY for handlers that read "birth.*" (the API's
+// parsePrefixedMoment / serveVedicDualMoment). The personalised horoscope
+// endpoints look similar but are not: they read the natal chart unprefixed
+// and the day from transit_date — see NarrativeHoroscopeInput.
 //
 // Sending natal data unprefixed instead is not a harmless variation — the
 // API then treats the birth date as the transit date and answers 200 with

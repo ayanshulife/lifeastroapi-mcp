@@ -230,8 +230,13 @@ func registerNarrativeFinanceOutlook(s *mcp.Server, c *apiClient) {
 	})
 }
 
-// The horoscope date is on_date, not date: date is the birth date (from
-// the embedded BirthInput), and a second field tagged "date" would shadow it.
+// Personalised horoscopes are NOT dual-moment endpoints: the API reads the
+// natal chart from the plain lat/lon/date/time/tz and takes the day to read
+// for from transit_date (default: today). Sending the natal chart under
+// "birth.*" with date=today still answers 200 — for a chart cast today.
+//
+// The field is on_date, not date: date is the birth date (from the embedded
+// BirthInput), and a second field tagged "date" would shadow it.
 type NarrativeHoroscopeInput struct {
 	BirthInput
 	OnDate string `json:"on_date,omitempty" jsonschema:"optional date the horoscope is for, YYYY-MM-DD; defaults to today"`
@@ -239,7 +244,10 @@ type NarrativeHoroscopeInput struct {
 }
 
 func (n NarrativeHoroscopeInput) toQuery() url.Values {
-	q := dualQuery(n.BirthInput, n.OnDate, "")
+	q := n.BirthInput.toQuery()
+	if n.OnDate != "" {
+		q.Set("transit_date", n.OnDate)
+	}
 	if n.Lang != "" {
 		q.Set("lang", n.Lang)
 	}
@@ -277,7 +285,11 @@ func registerNarrativeHoroscopeDailyTamil(s *mcp.Server, c *apiClient) {
 		Description: "Get a daily horoscope in Tamil astrology style — uses the Tamil rashi system and traditional Tamil Panchangam for the day's reading. Use for 'Tamil horoscope today', 'தினசரி ராசிபலன்', 'Tamil rasi palan'.",
 		Title:       "Daily Tamil Horoscope",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativeTamilHoroscopeInput) (*mcp.CallToolResult, any, error) {
-		return callPassthrough(ctx, c, "/v1/vedic/narrative/horoscope/daily-tamil", dualQuery(in.BirthInput, in.OnDate, ""))
+		q := in.BirthInput.toQuery()
+		if in.OnDate != "" {
+			q.Set("transit_date", in.OnDate)
+		}
+		return callPassthrough(ctx, c, "/v1/vedic/narrative/horoscope/daily-tamil", q)
 	})
 }
 
@@ -557,12 +569,20 @@ func registerNarrativeYogas(s *mcp.Server, c *apiClient) {
 
 type ReportBirthInput struct {
 	BirthInput
+	Name   string `json:"name,omitempty" jsonschema:"optional name of the person, shown on the report (defaults to 'Subject')"`
+	Place  string `json:"place,omitempty" jsonschema:"optional birth place name to show on the report instead of the coordinates (display only; the chart always uses lat/lon)"`
 	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	Format string `json:"format,omitempty" jsonschema:"output format: json (default) or pdf"`
 }
 
 func (r ReportBirthInput) toQuery() url.Values {
 	q := r.BirthInput.toQuery()
+	if r.Name != "" {
+		q.Set("name", r.Name)
+	}
+	if r.Place != "" {
+		q.Set("place", r.Place)
+	}
 	if r.Lang != "" {
 		q.Set("lang", r.Lang)
 	}

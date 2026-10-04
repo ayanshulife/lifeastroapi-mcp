@@ -840,7 +840,7 @@ func TestTool_PrashnaAnswer_SendsHouseAndMoment(t *testing.T) {
 // asserted here rather than left to the live sweep, which cannot see it.
 func TestTool_TransitTools_SendBirthPrefixAndToday(t *testing.T) {
 	t.Parallel()
-	for _, tool := range []string{"transit_double_transit", "transit_tarabala", "transit_vedha", "transit_ashtakavarga", "ashtakavarga_kaksha", "narrative_transit_phal", "narrative_horoscope_daily_by_lagna"} {
+	for _, tool := range []string{"transit_double_transit", "transit_tarabala", "transit_vedha", "transit_ashtakavarga", "ashtakavarga_kaksha", "narrative_transit_phal"} {
 		session, log := newTestServer(t, 200, `{}`)
 		res := callTool(t, session, tool, map[string]any{
 			"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata",
@@ -854,6 +854,33 @@ func TestTool_TransitTools_SendBirthPrefixAndToday(t *testing.T) {
 		}
 		if q.Get("date") == "" || q.Get("date") == "1990-01-15" {
 			t.Errorf("%s: transit date should default to today, got %q", tool, q.Get("date"))
+		}
+	}
+}
+
+// The personalised horoscopes read the natal chart UNPREFIXED and the day
+// from transit_date. Getting this backwards returns 200 with a horoscope for
+// a chart cast today, so it is pinned here.
+func TestTool_NarrativeHoroscope_BirthUnprefixedDayAsTransitDate(t *testing.T) {
+	t.Parallel()
+	for _, tool := range []string{"narrative_horoscope_daily_by_lagna", "narrative_horoscope_daily_by_moon", "narrative_horoscope_daily_tamil", "narrative_horoscope_weekly_by_lagna", "narrative_horoscope_weekly_by_moon"} {
+		session, log := newTestServer(t, 200, `{}`)
+		res := callTool(t, session, tool, map[string]any{
+			"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata",
+			"on_date": "2026-10-10",
+		})
+		if res.IsError {
+			t.Fatalf("%s: tool returned error: %s", tool, firstText(t, res))
+		}
+		q := log.queries[0]
+		if q.Get("date") != "1990-01-15" || q.Get("time") != "10:30" {
+			t.Errorf("%s: birth date/time must be sent as date/time, got %v", tool, q)
+		}
+		if q.Has("birth.date") {
+			t.Errorf("%s: must not send birth.* (the handler does not read it): %v", tool, q)
+		}
+		if q.Get("transit_date") != "2026-10-10" {
+			t.Errorf("%s: on_date must be sent as transit_date, got %q", tool, q.Get("transit_date"))
 		}
 	}
 }
