@@ -1,4 +1,4 @@
-# lifeastro-mcp v0.4.0
+# lifeastro-mcp v0.11.0
 
 Festival and calendar tools now match printed Hindu calendars.
 
@@ -40,10 +40,10 @@ LifeAstroAPI backend with the 2026-10 festival engine (`/v1/festivals/*` locatio
 
 ## Release checklist
 
-1. Push the tag `v0.4.0` (GitHub Desktop: History → right-click the latest commit →
-   Create Tag… → `v0.4.0` → Push origin). The Release workflow builds all five
+1. Push the tag `v0.11.0` (GitHub Desktop: History → right-click the latest commit →
+   Create Tag… → `v0.11.0` → Push origin). The Release workflow builds all five
    binaries in CI and creates a **draft** release with them and a checksums file.
 2. Open the draft release, paste this file as the description, and publish it.
-3. Update `HomebrewFormula/lifeastro-mcp.rb`: `version "0.4.0"` and the sha256 values from
+3. Update `HomebrewFormula/lifeastro-mcp.rb`: `version "0.11.0"` and the sha256 values from
    the **release's** `lifeastro-mcp-checksums.txt` (not the local `dist/` one: CI and local
    builds can differ byte for byte). Commit and push.
