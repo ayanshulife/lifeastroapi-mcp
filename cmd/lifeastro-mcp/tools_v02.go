@@ -530,24 +530,36 @@ func registerEclipsesLunar(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 type FestivalsMonthInput struct {
-	Year   int    `json:"year" jsonschema:"the Gregorian year, e.g. 2026"`
-	Month  int    `json:"month" jsonschema:"the Gregorian month 1..12"`
-	Tz     string `json:"tz" jsonschema:"IANA timezone for date interpretation (e.g. Asia/Kolkata)"`
-	Region string `json:"region,omitempty" jsonschema:"optional region filter: 'north_india', 'south_india', 'maharashtra', 'gujarat', 'bengal' — defaults to all-India"`
+	Year        int     `json:"year" jsonschema:"the Gregorian year, e.g. 2026"`
+	Month       int     `json:"month" jsonschema:"the Gregorian month 1..12"`
+	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude in decimal degrees — festival dates depend on local sunrise/moonrise; defaults to New Delhi"`
+	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude in decimal degrees; defaults to New Delhi"`
+	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone for the civil dates (e.g. Asia/Kolkata, Europe/London); defaults to Asia/Kolkata"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"language of names: en (default), hi, mr, ta, kn, bn, gu, pa"`
+	MonthSystem string  `json:"month_system,omitempty" jsonschema:"month naming convention: 'purnimanta' (default, North India) or 'amanta' (South/West/East India). Dates never change."`
 }
 
 func registerFestivalsMonth(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "festivals_month",
-		Description: "List Hindu festivals and observances in a given calendar month — Diwali, Holi, Navratri, Karva Chauth, Ekadashis, Pradosham, etc., with their tithi-anchored date and significance. Use for 'festivals in November 2026', 'Hindu holidays this month'.",
+		Description: "Full Hindu festival calendar for a month at a location — every Ekadashi (smarta + Vaishnava/Gauna, with parana window), Pradosh by weekday, Sankashti/Vinayaka Chaturthi, every Purnima and Amavasya (Somavati, Darsha, Anvadhan, Ishti), Chandra Darshana, all 12 Sankrantis, Diwali, Holi, Navratri, Karwa Chauth, Raksha Bandhan, regional festivals (Tamil, Kerala, Marathi, Telugu, Bengali, Gujarati, Punjabi), jayantis, national days and eclipses. Dates are location-aware (pass lat/lon/tz for NRIs) and match Drik Panchang city calendars 100 %. Use for 'festivals in November 2026', 'Ekadashi dates this month in London', 'Hindu holidays this month'.",
 		Title:       "Hindu Festivals (Month)",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsMonthInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
 		q.Set("year", strconv.Itoa(in.Year))
 		q.Set("month", strconv.Itoa(in.Month))
-		q.Set("tz", in.Tz)
-		if in.Region != "" {
-			q.Set("region", in.Region)
+		if in.Lat != 0 || in.Lon != 0 {
+			q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
+			q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
+		}
+		if in.Tz != "" {
+			q.Set("tz", in.Tz)
+		}
+		if in.Locale != "" {
+			q.Set("locale", in.Locale)
+		}
+		if in.MonthSystem != "" {
+			q.Set("month_system", in.MonthSystem)
 		}
 		return callPassthrough(ctx, c, "/v1/festivals/month", q)
 	})

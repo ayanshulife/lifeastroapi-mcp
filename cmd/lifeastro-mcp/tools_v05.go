@@ -94,30 +94,46 @@ func registerPanchangLagnaTable(s *mcp.Server, c *apiClient) {
 // 4. /v1/panchang/monthly — month calendar (5 credits)
 // =====================================================================
 
-// PanchangMonthlyInput uses TzOffsetHours (a decimal number like 5.5 for IST)
-// rather than an IANA timezone string. This is intentional: the /panchang/monthly
-// endpoint accepts only a numeric offset, not an IANA name. Use 5.5 for Asia/Kolkata,
-// -5.0 for America/New_York, 0.0 for UTC. Do NOT pass "Asia/Kolkata" here.
+// PanchangMonthlyInput.Tz accepts an IANA name (preferred, DST-correct), a
+// fixed offset ("+05:30") or decimal hours ("5.5"). Sheet=true returns the
+// complete printable calendar page (end-times, moonrise/moonset, samvat,
+// festivals per day) at the same credit cost.
 type PanchangMonthlyInput struct {
-	Lat           float64 `json:"lat" jsonschema:"observer latitude in decimal degrees"`
-	Lon           float64 `json:"lon" jsonschema:"observer longitude in decimal degrees"`
-	TzOffsetHours float64 `json:"tz_offset_hours" jsonschema:"UTC offset as decimal hours — use a number, NOT an IANA string. Examples: 5.5 for India (IST +05:30), -5.0 for US Eastern (EST), 0.0 for UTC, 5.75 for Nepal (+05:45)"`
-	Year          int     `json:"year" jsonschema:"Gregorian year (e.g. 2026)"`
-	Month         int     `json:"month" jsonschema:"month number 1–12"`
+	Lat         float64 `json:"lat" jsonschema:"observer latitude in decimal degrees"`
+	Lon         float64 `json:"lon" jsonschema:"observer longitude in decimal degrees"`
+	Alt         float64 `json:"alt,omitempty" jsonschema:"elevation in metres (printed panchangs use it for sunrise/sunset; e.g. 227 for Delhi)"`
+	Tz          string  `json:"tz" jsonschema:"IANA timezone such as Asia/Kolkata or Europe/London (DST-correct); a fixed offset like +05:30 or decimal hours like 5.5 also work"`
+	Year        int     `json:"year" jsonschema:"Gregorian year (e.g. 2026)"`
+	Month       int     `json:"month" jsonschema:"month number 1–12"`
+	Sheet       bool    `json:"sheet,omitempty" jsonschema:"true = also return the complete printable calendar sheet: per-day tithi/nakshatra/moon-sign end-times in '27:07+' notation, kshaya days, moonrise/moonset, Hindu month, Vikram/Shaka samvat, moon phase, festivals of the day and the page header"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"language of names in the sheet: en (default), hi, mr, ta, kn, bn, gu, pa"`
+	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming for the sheet"`
 }
 
 func registerPanchangMonthly(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "panchang_monthly",
-		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. Ideal for building calendar views. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'when is Purnima this month', 'calendar for July'.",
+		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. With sheet=true it is a complete printable Hindu calendar page (Drik-Panchang style): tithi/nakshatra/moon-sign end-times, kshaya days, moonrise/moonset, Hindu month, samvat and every festival of each day. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'make a Hindu calendar for Delhi October 2027'.",
 		Title:       "Panchang Monthly Calendar",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in PanchangMonthlyInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
 		q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
 		q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
-		q.Set("tz", strconv.FormatFloat(in.TzOffsetHours, 'f', -1, 64))
+		if in.Alt != 0 {
+			q.Set("alt", strconv.FormatFloat(in.Alt, 'f', -1, 64))
+		}
+		q.Set("tz", in.Tz)
 		q.Set("year", strconv.Itoa(in.Year))
 		q.Set("month", strconv.Itoa(in.Month))
+		if in.Sheet {
+			q.Set("include", "sheet")
+		}
+		if in.Locale != "" {
+			q.Set("locale", in.Locale)
+		}
+		if in.MonthSystem != "" {
+			q.Set("month_system", in.MonthSystem)
+		}
 		return callPassthrough(ctx, c, "/v1/panchang/monthly", q)
 	})
 }

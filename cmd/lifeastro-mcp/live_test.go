@@ -247,7 +247,7 @@ var liveDefaults = map[string]any{
 	"aspect": "trine", "asc_sign": "leo", "varga": "D9", "transit_planet": "Saturn",
 	"natal_planet": "Sun", "return_year": 2026, "md": "Jupiter", "ad": "Saturn", "pd": "Mercury", "sd": "Ketu",
 	"lot_sign": "cancer", "lord": "Jupiter", "birth_nak": 7, "year_month": "2026-11",
-	"week_start": "2026-11-02", "tz_offset_hours": 5.5, "star": "Regulus",
+	"week_start": "2026-11-02", "tz": "5.5", "star": "Regulus",
 	"sign_a": "Aries", "sign_b": "Leo", "q": "Mumbai", "planet_a": "Sun", "planet_b": "Moon",
 	"observer_lat": 28.6139, "observer_lon": 77.2090, "number": 1, "n": 5, "maha": "Jupiter",
 	"koota": "nadi", "degree": 100, "decan": 2, "cusp": 7, "component": "sthana",

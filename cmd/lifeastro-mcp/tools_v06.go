@@ -323,24 +323,34 @@ func registerDashaYoginiFull(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 type FestivalsOnDateInput struct {
-	Date   string `json:"date" jsonschema:"date to query in YYYY-MM-DD format"`
-	Tz     string `json:"tz,omitempty" jsonschema:"IANA timezone for date boundaries (e.g. Asia/Kolkata); defaults to UTC"`
-	Region string `json:"region,omitempty" jsonschema:"optional region: 'north_india', 'south_india', 'maharashtra', 'gujarat', 'bengal'"`
+	Date        string  `json:"date" jsonschema:"date to query in YYYY-MM-DD format"`
+	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude in decimal degrees — vrat dates depend on local sunrise/moonrise; defaults to New Delhi"`
+	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude in decimal degrees; defaults to New Delhi"`
+	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone for the civil date (e.g. Asia/Kolkata); defaults to Asia/Kolkata"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"language of names: en (default), hi, mr, ta, kn, bn, gu, pa"`
+	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming"`
 }
 
 func registerFestivalsOnDate(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "festivals_on_date",
-		Description: "List Hindu festivals and observances falling on a specific date — Ekadashi, Pradosh, Purnima, Amavasya, major festivals, vratas, and regional observances. Use for 'what festival is today', 'which vrat is on 15 July 2026', 'is there any festival tomorrow'.",
+		Description: "List everything observed on a specific date at a location — festivals, vrats, Ekadashi (smarta/Vaishnava), Pradosh, Purnima, Amavasya, Sankranti, jayantis, eclipses — each with the windows a panchang prints (moonrise for Karwa Chauth/Sankashti, pradosh kaal, Ekadashi parana). Use for 'what festival is today', 'which vrat is on 15 July 2026', 'is there any festival tomorrow in Toronto'.",
 		Title:       "Festivals on a Specific Date",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsOnDateInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
 		q.Set("date", in.Date)
+		if in.Lat != 0 || in.Lon != 0 {
+			q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
+			q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
+		}
 		if in.Tz != "" {
 			q.Set("tz", in.Tz)
 		}
-		if in.Region != "" {
-			q.Set("region", in.Region)
+		if in.Locale != "" {
+			q.Set("locale", in.Locale)
+		}
+		if in.MonthSystem != "" {
+			q.Set("month_system", in.MonthSystem)
 		}
 		return callPassthrough(ctx, c, "/v1/festivals/on-date", q)
 	})
