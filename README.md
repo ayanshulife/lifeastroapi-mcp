@@ -6,6 +6,8 @@
 
 **Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 310 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
 
+Covers panchang, the Hindu festival and vrat calendar (Ekadashi, Pradosh, Purnima, Sankranti and more, for any city, verified against printed panchangs of 14 cities), kundli, dashas, kundli matching, muhurat, horoscopes, numerology, tarot and Western astrology.
+
 End users don't write code, copy curl commands, or read API docs. They just chat with their AI assistant naturally and the assistant invokes the right tool when an astrology question comes up:
 
 > **User:** Mera lagna kya hai? Birth: 15 Jan 1990, 10:30 AM, Mumbai.
