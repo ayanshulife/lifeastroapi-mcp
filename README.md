@@ -4,7 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/ayanshulife/lifeastroapi-mcp.svg)](https://pkg.go.dev/github.com/ayanshulife/lifeastroapi-mcp)
 [![Release](https://img.shields.io/github/v/release/ayanshulife/lifeastroapi-mcp)](https://github.com/ayanshulife/lifeastroapi-mcp/releases)
 
-**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 308 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
+**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 310 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
 
 End users don't write code, copy curl commands, or read API docs. They just chat with their AI assistant naturally and the assistant invokes the right tool when an astrology question comes up:
 
@@ -142,7 +142,7 @@ Any MCP-aware client supports the same shape — `command` + `env` with the abso
 
 ## Tools
 
-The server exposes **308 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
+The server exposes **310 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
 
 | Domain | Tools | Examples |
 |---|---|---|
@@ -218,7 +218,7 @@ LIFEASTRO_API_KEY=dv_live_... make live LIVE_SKIP=        # include reports
 
 ## Roadmap
 
-- **v0.11 (current):** Local stdio MCP server, 308 tools, every tool verified against the live API (`make live`)
+- **v0.11 (current):** Local stdio MCP server, 310 tools, every tool verified against the live API (`make live`)
 - **v1.0 (planned):** Stable tool surface; semantic versioning kicks in
 - **Remote HTTP MCP (separate project):** Hosted MCP endpoint at `mcp.lifeastroapi.com` for ChatGPT and web/mobile MCP clients — tracked separately from this repo
 

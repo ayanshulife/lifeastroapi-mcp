@@ -75,7 +75,7 @@ func firstText(t *testing.T, res *mcp.CallToolResult) string {
 // expectedToolCount is the source of truth for "how many tools should
 // the MCP server expose right now". Bump this when adding a tool;
 // the registration test below catches accidental additions or removals.
-const expectedToolCount = 308
+const expectedToolCount = 310
 
 func TestListTools_AllRegistered(t *testing.T) {
 	t.Parallel()
@@ -240,6 +240,7 @@ func TestListTools_AllRegistered(t *testing.T) {
 		"calendar_month":                       true,
 		"calendar_ritu":                        true,
 		"calendar_samvatsara":                  true,
+		"calendar_solstices":                   true,
 		"chart_bhavabala":                      true,
 		"chart_combustion":                     true,
 		"chart_ghatak":                         true,
@@ -257,6 +258,7 @@ func TestListTools_AllRegistered(t *testing.T) {
 		"dasha_yogini_full":                    true,
 		"eclipses_all":                         true,
 		"festivals_on_date":                    true,
+		"festivals_vrat":                       true,
 		"geo_place":                            true,
 		"geo_search":                           true,
 		"geo_timezone":                         true,

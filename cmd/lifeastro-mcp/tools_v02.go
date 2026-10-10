@@ -490,8 +490,10 @@ func registerNumerologyFull(s *mcp.Server, c *apiClient) {
 type EclipseRangeInput struct {
 	StartDate string  `json:"start_date" jsonschema:"start of the search window in YYYY-MM-DD"`
 	EndDate   string  `json:"end_date" jsonschema:"end of the search window in YYYY-MM-DD"`
-	Lat       float64 `json:"lat,omitempty" jsonschema:"optional observer latitude — when set, returns only eclipses visible from this location"`
+	Lat       float64 `json:"lat,omitempty" jsonschema:"optional observer latitude — when set, each eclipse also carries a 'local' block: contact times (sparsha, sammilana, madhya, unmilana, moksha) in local time, visibility at that place, and the sutak kaal"`
 	Lon       float64 `json:"lon,omitempty" jsonschema:"optional observer longitude (paired with lat)"`
+	Alt       float64 `json:"alt,omitempty" jsonschema:"optional elevation in metres"`
+	Tz        string  `json:"tz,omitempty" jsonschema:"IANA timezone for the local contact times (default Asia/Kolkata)"`
 }
 
 func (e EclipseRangeInput) toQuery() url.Values {
@@ -502,13 +504,19 @@ func (e EclipseRangeInput) toQuery() url.Values {
 		q.Set("lat", strconv.FormatFloat(e.Lat, 'f', -1, 64))
 		q.Set("lon", strconv.FormatFloat(e.Lon, 'f', -1, 64))
 	}
+	if e.Alt != 0 {
+		q.Set("alt", strconv.FormatFloat(e.Alt, 'f', -1, 64))
+	}
+	if e.Tz != "" {
+		q.Set("tz", e.Tz)
+	}
 	return q
 }
 
 func registerEclipsesSolar(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "eclipses_solar",
-		Description: "List solar eclipses in a date range — returns peak time (UT), magnitude, type (total / annular / partial / hybrid), and visibility path. Optional lat/lon filters to eclipses visible from that location. Use for 'when is the next solar eclipse', 'solar eclipses in 2026'.",
+		Description: "List solar eclipses in a date range — peak time (UT), type (total / annular / partial / hybrid), nakshatra. With lat/lon each eclipse also has a 'local' block: contact times sparsha / sammilana / madhya / unmilana / moksha in local time, whether it is visible there, magnitude, obscuration, and the sutak kaal (12 h before sparsha until moksha; only where visible). Use for 'when is the next solar eclipse', 'surya grahan 2027 sutak time in Delhi'.",
 		Title:       "Solar Eclipses",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in EclipseRangeInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/eclipses/solar", in.toQuery())
@@ -518,7 +526,7 @@ func registerEclipsesSolar(s *mcp.Server, c *apiClient) {
 func registerEclipsesLunar(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "eclipses_lunar",
-		Description: "List lunar eclipses in a date range — returns peak time (UT), magnitude, type (total / partial / penumbral), and visibility. Optional lat/lon filters to eclipses visible from that location. Use for 'next lunar eclipse', 'chandra grahan dates'.",
+		Description: "List lunar eclipses in a date range — peak time (UT), type (total / partial / penumbral), nakshatra. With lat/lon each eclipse also has a 'local' block: contact times in local time, whether the Moon is above the horizon there, and the sutak kaal (9 h before sparsha until moksha; none for a penumbral/upachchaya eclipse). Use for 'next lunar eclipse', 'chandra grahan sutak time in Mumbai'.",
 		Title:       "Lunar Eclipses",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in EclipseRangeInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/eclipses/lunar", in.toQuery())

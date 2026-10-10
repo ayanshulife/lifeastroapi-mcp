@@ -43,6 +43,8 @@ func registerV06Tools(s *mcp.Server, c *apiClient) {
 	registerCalendarMonth(s, c)
 	registerCalendarRitu(s, c)
 	registerCalendarSamvatsara(s, c)
+	registerCalendarSolstices(s, c)
+	registerFestivalsVrat(s, c)
 
 	// Chart
 	registerChartBhavabala(s, c)
@@ -226,6 +228,32 @@ func registerCalendarSamvatsara(s *mcp.Server, c *apiClient) {
 	})
 }
 
+type CalendarSolsticesInput struct {
+	Year int     `json:"year" jsonschema:"Gregorian year, e.g. 2027"`
+	Tz   string  `json:"tz,omitempty" jsonschema:"IANA timezone for local times (default Asia/Kolkata)"`
+	Lat  float64 `json:"lat,omitempty" jsonschema:"optional latitude — adds sunrise, sunset and day length on each event date"`
+	Lon  float64 `json:"lon,omitempty" jsonschema:"optional longitude (paired with lat)"`
+}
+
+func registerCalendarSolstices(s *mcp.Server, c *apiClient) {
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "calendar_solstices",
+		Description: "Get the equinoxes and solstices of a year — the exact moment (UTC and local) the tropical Sun reaches 0°, 90°, 180°, 270°, which ayana begins (tropical Dakshinayana at the June solstice, tropical Uttarayana at the December solstice — the panchang's sidereal Uttarayana is Makara Sankranti ~24 days later), and with lat/lon the sunrise, sunset and day length at that place. Use for 'when is the winter solstice', 'longest day of 2027 in Delhi', 'when does Uttarayana start'.",
+		Title:       "Equinoxes & Solstices",
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in CalendarSolsticesInput) (*mcp.CallToolResult, any, error) {
+		q := url.Values{}
+		q.Set("year", strconv.Itoa(in.Year))
+		if in.Tz != "" {
+			q.Set("tz", in.Tz)
+		}
+		if in.Lat != 0 || in.Lon != 0 {
+			q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
+			q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
+		}
+		return callPassthrough(ctx, c, "/v1/calendar/solstices", q)
+	})
+}
+
 // =====================================================================
 // Chart — missing compute tools (6)
 // =====================================================================
@@ -353,6 +381,42 @@ func registerFestivalsOnDate(s *mcp.Server, c *apiClient) {
 			q.Set("month_system", in.MonthSystem)
 		}
 		return callPassthrough(ctx, c, "/v1/festivals/on-date", q)
+	})
+}
+
+type FestivalsVratInput struct {
+	Year        int     `json:"year" jsonschema:"Gregorian year, e.g. 2027"`
+	Type        string  `json:"type" jsonschema:"observance family, comma-separated for several: ekadashi | parana | pradosh | sankashti | vinayaka | purnima | amavasya | chandra_darshana | masik_shivaratri | durgashtami | kalashtami | skanda_shashthi | karthigai | shraddha | janmashtami | sankranti | satyanarayana | bhanu_saptami | eclipse"`
+	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude (dates depend on local sunrise/moonrise); defaults to New Delhi"`
+	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude; defaults to New Delhi"`
+	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone; defaults to Asia/Kolkata"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"en (default), hi, mr, ta, kn, bn, gu, pa"`
+	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta'"`
+}
+
+func registerFestivalsVrat(s *mcp.Server, c *apiClient) {
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "festivals_vrat",
+		Description: "Year-wise Vrat & Upavas lists — every Ekadashi of the year (smarta + Vaishnava/Gauna, with parana windows), every Pradosh (named by weekday), Sankashti/Vinayaka Chaturthi, Purnima, Amavasya, Chandra Darshana, Masik Shivaratri, Durgashtami, Kalashtami, Skanda Shashthi, Masik Karthigai, Shraddha dates (all 16 Pitru Paksha tithis), Janmashtami (Smarta and ISKCON), Sankranti, Satyanarayana Puja or eclipses — at a location. Use for 'all Ekadashi dates in 2027', 'pradosh vrat list this year in London', 'shraddha dates 2027'.",
+		Title:       "Vrat & Upavas Dates (Year)",
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsVratInput) (*mcp.CallToolResult, any, error) {
+		q := url.Values{}
+		q.Set("year", strconv.Itoa(in.Year))
+		q.Set("type", in.Type)
+		if in.Lat != 0 || in.Lon != 0 {
+			q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
+			q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
+		}
+		if in.Tz != "" {
+			q.Set("tz", in.Tz)
+		}
+		if in.Locale != "" {
+			q.Set("locale", in.Locale)
+		}
+		if in.MonthSystem != "" {
+			q.Set("month_system", in.MonthSystem)
+		}
+		return callPassthrough(ctx, c, "/v1/festivals/vrat", q)
 	})
 }
 

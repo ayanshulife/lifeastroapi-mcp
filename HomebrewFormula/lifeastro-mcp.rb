@@ -28,7 +28,7 @@
 #    artifacts via `url` + `sha256`.
 
 class LifeastroMcp < Formula
-  desc "LifeAstroAPI MCP server — 308 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
+  desc "LifeAstroAPI MCP server — 310 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
   homepage "https://github.com/ayanshulife/lifeastroapi-mcp"
   version "0.3.1"
   license "MIT"
