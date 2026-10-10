@@ -10,12 +10,12 @@
 #     without a tap. Requires a stable release history first (per Homebrew's
 #     audit policy: 30 days + GitHub stars threshold).
 #
-# Maintainer release flow when cutting `v0.3.1`:
-#   1. git tag v0.3.1 && git push origin v0.3.1
-#   2. Wait for the GitHub Actions release workflow to publish binaries
-#      + checksums.txt at the Release URL.
+# Maintainer release flow when cutting a new version (e.g. `v0.11.0`):
+#   1. Tag the commit and push the tag.
+#   2. Wait for the GitHub Actions release workflow, then publish the draft.
 #   3. Update `version` below.
-#   4. Update each `sha256` from dist/lifeastro-mcp-checksums.txt.
+#   4. Update each `sha256` from the RELEASE's lifeastro-mcp-checksums.txt
+#      (not the local dist/ copy: CI and local builds differ byte for byte).
 #   5. Commit + push. Users `brew upgrade lifeastro-mcp` picks it up.
 #
 # Why a binary formula (not source build)?
@@ -30,35 +30,38 @@
 class LifeastroMcp < Formula
   desc "LifeAstroAPI MCP server — 310 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
   homepage "https://github.com/ayanshulife/lifeastroapi-mcp"
-  version "0.3.1"
+  version "0.11.0"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-darwin-arm64"
-      sha256 "0c831042d448251755a2966b4aeaac79e42c33cc5ae8a77d8a7a52ac96fae893"
+      sha256 "43e55f979c2b443d5671909971b58e53ad877050c1b8148aed70aca3331dbf7b"
     end
     on_intel do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-darwin-amd64"
-      sha256 "08c70ddc503507f0c17cdbcadba25fbd85e6964c2f86316de9c390bcbdd1d322"
+      sha256 "fb6ee6ea731129de207c322220d0e70e45c8f0bbe2818a0e4fad49c93594b3af"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-linux-arm64"
-      sha256 "07d35ccc9a4647e98d1fc3fe217f4983527b936a2c82c92c4b989c191608cb2a"
+      sha256 "b46acc699ac1a9c56aaf4726e3788eb214cba4f99233598bc1e8936ac4863c37"
     end
     on_intel do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-linux-amd64"
-      sha256 "8ef1118a5fbb6b936b444d34dd7412fb384988de47fd98cf4d9b8055f4612de9"
+      sha256 "bd96f4d4c2fc48a31930b226f0ef8d6f948591e230671d3f97ced7d8f8409fe6"
     end
   end
 
   def install
     # The downloaded artifact is the bare binary (not a tarball).
     # Rename to the canonical name and install into Homebrew's bin.
-    src = "lifeastro-mcp-#{OS.kernel_name.downcase}-#{Hardware::CPU.arch}"
+    # Release files use Go's arch names (amd64/arm64); Homebrew reports
+    # Intel as x86_64, so map it explicitly.
+    arch = Hardware::CPU.intel? ? "amd64" : "arm64"
+    src = "lifeastro-mcp-#{OS.kernel_name.downcase}-#{arch}"
     bin.install src => "lifeastro-mcp"
   end
 
@@ -78,16 +81,16 @@ class LifeastroMcp < Formula
           }
         }
 
-      Get an API key at https://lifeastroapi.com/dashboard/keys
+      Get a free API key at https://lifeastroapi.com/signup/
       Cursor users: edit ~/.cursor/mcp.json with the same shape.
     EOS
   end
 
   test do
-    # Smoke test — running without an API key must fail fast with the
-    # documented error message. This catches build regressions where
-    # the auth gate is silently skipped.
-    output = shell_output("#{bin}/lifeastro-mcp 2>&1", 1)
+    # Smoke test — without an API key the server warns on stderr and, with
+    # stdin closed, exits cleanly (status 0) at EOF. The warning must name
+    # the env var.
+    output = shell_output("#{bin}/lifeastro-mcp </dev/null 2>&1")
     assert_match "LIFEASTRO_API_KEY", output
   end
 end
