@@ -26,6 +26,13 @@ Festival and calendar tools now match printed Hindu calendars.
 
 Total tools: 310.
 
+## Other changes
+
+- The server no longer exits when `LIFEASTRO_API_KEY` is missing. It starts, lists all
+  310 tools (so MCP registries and inspectors can read them), and each tool call returns
+  a clear "set LIFEASTRO_API_KEY" message until a key is configured.
+- `smithery.yaml` and a `Dockerfile` for container-based MCP registries.
+
 ## Requires
 
 LifeAstroAPI backend with the 2026-10 festival engine (`/v1/festivals/*` location params,
@@ -33,7 +40,10 @@ LifeAstroAPI backend with the 2026-10 festival engine (`/v1/festivals/*` locatio
 
 ## Release checklist
 
-1. `git tag v0.4.0 && git push origin v0.4.0`
-2. Attach `dist/lifeastro-mcp-*` and `dist/lifeastro-mcp-checksums.txt` to the GitHub release.
-3. Update `HomebrewFormula/lifeastro-mcp.rb`: `version "0.4.0"` + the five sha256 values
-   from `dist/lifeastro-mcp-checksums.txt`; commit and push.
+1. Push the tag `v0.4.0` (GitHub Desktop: History → right-click the latest commit →
+   Create Tag… → `v0.4.0` → Push origin). The Release workflow builds all five
+   binaries in CI and creates a **draft** release with them and a checksums file.
+2. Open the draft release, paste this file as the description, and publish it.
+3. Update `HomebrewFormula/lifeastro-mcp.rb`: `version "0.4.0"` and the sha256 values from
+   the **release's** `lifeastro-mcp-checksums.txt` (not the local `dist/` one: CI and local
+   builds can differ byte for byte). Commit and push.

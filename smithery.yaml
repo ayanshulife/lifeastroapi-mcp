@@ -1,0 +1,25 @@
+# Smithery registry config: https://smithery.ai/docs/build/project-config
+# The server speaks MCP over stdio and needs one secret, the LifeAstroAPI key.
+# Without a key it still starts and lists its 310 tools (so the registry can
+# inspect it); each tool call then explains how to set the key.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - lifeastroApiKey
+    properties:
+      lifeastroApiKey:
+        type: string
+        description: Your LifeAstroAPI key (starts with dv_live_). Get a free key at https://lifeastroapi.com/signup/
+  commandFunction: |-
+    (config) => ({
+      command: 'lifeastro-mcp',
+      args: [],
+      env: { LIFEASTRO_API_KEY: config.lifeastroApiKey }
+    })
+  exampleConfig:
+    lifeastroApiKey: dv_live_your_key_here
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: .

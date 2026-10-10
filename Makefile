@@ -24,7 +24,7 @@ build-all:
 	GOOS=linux   GOARCH=amd64 CGO_ENABLED=0 go build $(LDFLAGS) -o dist/$(BINARY)-linux-amd64     ./cmd/lifeastro-mcp/
 	GOOS=linux   GOARCH=arm64 CGO_ENABLED=0 go build $(LDFLAGS) -o dist/$(BINARY)-linux-arm64     ./cmd/lifeastro-mcp/
 	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build $(LDFLAGS) -o dist/$(BINARY)-windows-amd64.exe ./cmd/lifeastro-mcp/
-	@cd dist && shasum -a 256 $(BINARY)-* > $(BINARY)-checksums.txt
+	@cd dist && rm -f $(BINARY)-checksums.txt && shasum -a 256 $(BINARY)-* > $(BINARY)-checksums.txt
 	@echo "Release artifacts in dist/ (version=$(VERSION)):"
 	@ls -lh dist/$(BINARY)-*
 

@@ -69,16 +69,16 @@ var commit = "none"
 const defaultAPIBaseURL = "https://api.lifeastroapi.com"
 
 func main() {
-	// Read auth from env. Fail fast — there's no recovery path if the
-	// AI client hasn't injected the key, and silent fallback would hide
-	// the configuration mistake from the user.
+	// Read auth from env. A missing key is NOT fatal: MCP directories and
+	// inspectors start the server without credentials to list its tools,
+	// and exiting here made the server look broken to them. Instead we
+	// warn on stderr (visible in client logs) and every tool call returns
+	// a clear "set LIFEASTRO_API_KEY" error until a key is configured.
 	apiKey := os.Getenv("LIFEASTRO_API_KEY")
 	if apiKey == "" {
-		fmt.Fprintln(os.Stderr, "lifeastro-mcp: LIFEASTRO_API_KEY env var is required.")
-		fmt.Fprintln(os.Stderr, "Add it to your MCP client config:")
-		fmt.Fprintln(os.Stderr, `  "env": { "LIFEASTRO_API_KEY": "dv_live_..." }`)
-		fmt.Fprintln(os.Stderr, "Get a key at https://lifeastroapi.com/dashboard/keys")
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, "lifeastro-mcp: LIFEASTRO_API_KEY is not set — tools are listed but every call will fail until it is.")
+		fmt.Fprintln(os.Stderr, `Add it to your MCP client config:  "env": { "LIFEASTRO_API_KEY": "dv_live_..." }`)
+		fmt.Fprintln(os.Stderr, "Get a free key at https://lifeastroapi.com/signup/")
 	}
 
 	apiBaseURL := os.Getenv("LIFEASTRO_API_URL")

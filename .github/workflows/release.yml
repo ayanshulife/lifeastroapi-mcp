@@ -69,11 +69,12 @@ jobs:
 
       - name: Verify a binary boots
         run: |
-          # The Linux amd64 build runs on the runner. Confirm the
-          # binary fails fast with the expected message when no API
-          # key is set — sanity-checks the auth gate is wired.
+          # The Linux amd64 build runs on the runner. With no API key the
+          # server warns on stderr and keeps serving (so registries can list
+          # its tools); stdin from /dev/null makes it exit at EOF. Confirm
+          # the warning names the env var.
           chmod +x dist/lifeastro-mcp-linux-amd64
-          OUTPUT=$(dist/lifeastro-mcp-linux-amd64 2>&1 || true)
+          OUTPUT=$(timeout 20 dist/lifeastro-mcp-linux-amd64 </dev/null 2>&1 || true)
           echo "$OUTPUT"
           echo "$OUTPUT" | grep -q "LIFEASTRO_API_KEY" \
             || (echo "expected env-var error message; got: $OUTPUT" && exit 1)

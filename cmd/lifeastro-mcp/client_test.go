@@ -236,3 +236,14 @@ func TestCannedFixtureValid(t *testing.T) {
 		t.Errorf("fixture has wrong tithi: %v", got["tithi"])
 	}
 }
+
+// TestMissingAPIKeyFailsCallNotStartup: a server started without a key
+// must still serve tool listings, and each call must explain the fix.
+func TestMissingAPIKeyFailsCallNotStartup(t *testing.T) {
+	c := newAPIClient("http://127.0.0.1:1", "", "test")
+	var out map[string]any
+	err := c.get(context.Background(), "/v1/panchang/tithi", nil, &out)
+	if err == nil || !strings.Contains(err.Error(), "LIFEASTRO_API_KEY is not set") {
+		t.Fatalf("want missing-key error, got %v", err)
+	}
+}

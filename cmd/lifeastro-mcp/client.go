@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -82,6 +83,11 @@ func newAPIClient(baseURL, apiKey, version string) *apiClient {
 	}
 }
 
+// errMissingAPIKey is returned by every tool call when the server was
+// started without LIFEASTRO_API_KEY, so the assistant can tell the user
+// exactly what to fix instead of surfacing a 401 from the API.
+var errMissingAPIKey = errors.New("LIFEASTRO_API_KEY is not set: add it to the \"env\" block of this MCP server in your client config (free key at https://lifeastroapi.com/signup/)")
+
 // get performs an authenticated GET against the upstream API and
 // decodes the JSON response into out. Query parameters are passed as
 // a url.Values map so callers don't have to construct query strings
@@ -92,6 +98,9 @@ func newAPIClient(baseURL, apiKey, version string) *apiClient {
 // of "request failed". This is critical for debugging — when an AI
 // assistant says "the tool failed", users want to know why.
 func (c *apiClient) get(ctx context.Context, path string, params url.Values, out any) error {
+	if c.apiKey == "" {
+		return errMissingAPIKey
+	}
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}

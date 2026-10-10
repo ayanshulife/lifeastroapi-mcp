@@ -36,9 +36,9 @@ End users don't write code, copy curl commands, or read API docs. They just chat
 brew tap ayanshulife/lifeastroapi-mcp https://github.com/ayanshulife/lifeastroapi-mcp
 brew install lifeastro-mcp
 
-# Verify
-lifeastro-mcp 2>&1 | head -1
-# → "lifeastro-mcp: LIFEASTRO_API_KEY env var is required."
+# Verify (no key set yet, so it warns and exits when stdin closes)
+lifeastro-mcp </dev/null 2>&1 | head -1
+# → "lifeastro-mcp: LIFEASTRO_API_KEY is not set — tools are listed but every call will fail until it is."
 ```
 
 ### Any platform — pre-built binary
@@ -180,7 +180,7 @@ The server exposes **310 tools** across Vedic and Western astrology. The full li
 Check the Claude Desktop logs at `~/Library/Logs/Claude/mcp*.log`. The most common errors:
 
 - `command not found` — the path in `command` is wrong. Use `which lifeastro-mcp` to find the absolute path and paste that.
-- `LIFEASTRO_API_KEY env var is required` — the `env` block is missing or your API key has a typo.
+- `LIFEASTRO_API_KEY is not set` — the `env` block is missing or misspelt. The server still starts and lists its tools, but every tool call returns this message until the key is set.
 
 **A tool call returns `API 401: Unauthorized`.**
 Your API key is invalid, revoked, or expired. Generate a new one in the dashboard.
