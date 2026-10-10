@@ -6,7 +6,7 @@ Festival and calendar tools now match printed Hindu calendars.
 
 - `festivals_month`, `festivals_on_date` — now location-aware: optional `lat`, `lon`, `tz`
   (IANA). Dates follow the classical udaya / pradosh / nishita / moonrise / aparahna rules
-  and reproduce the Drik Panchang 2027 calendars of 14 cities (Delhi, Chennai, Bengaluru,
+  and reproduce the printed panchang calendars of 14 cities (Delhi, Chennai, Bengaluru,
   Hyderabad, Pune, Dubai, Singapore, London, Melbourne, Sydney, San Francisco, Seattle,
   Toronto, Brampton) entry for entry. Every named Ekadashi (smarta + Vaishnava/Gauna with
   parana window), Pradosh by weekday, Sankashti/Vinayaka Chaturthi, every Purnima and

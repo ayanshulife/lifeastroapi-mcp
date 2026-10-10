@@ -550,7 +550,7 @@ type FestivalsMonthInput struct {
 func registerFestivalsMonth(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "festivals_month",
-		Description: "Full Hindu festival calendar for a month at a location — every Ekadashi (smarta + Vaishnava/Gauna, with parana window), Pradosh by weekday, Sankashti/Vinayaka Chaturthi, every Purnima and Amavasya (Somavati, Darsha, Anvadhan, Ishti), Chandra Darshana, all 12 Sankrantis, Diwali, Holi, Navratri, Karwa Chauth, Raksha Bandhan, regional festivals (Tamil, Kerala, Marathi, Telugu, Bengali, Gujarati, Punjabi), jayantis, national days and eclipses. Dates are location-aware (pass lat/lon/tz for NRIs) and match Drik Panchang city calendars 100 %. Use for 'festivals in November 2026', 'Ekadashi dates this month in London', 'Hindu holidays this month'.",
+		Description: "Full Hindu festival calendar for a month at a location — every Ekadashi (smarta + Vaishnava/Gauna, with parana window), Pradosh by weekday, Sankashti/Vinayaka Chaturthi, every Purnima and Amavasya (Somavati, Darsha, Anvadhan, Ishti), Chandra Darshana, all 12 Sankrantis, Diwali, Holi, Navratri, Karwa Chauth, Raksha Bandhan, regional festivals (Tamil, Kerala, Marathi, Telugu, Bengali, Gujarati, Punjabi), jayantis, national days and eclipses. Dates are location-aware (pass lat/lon/tz for NRIs) and are verified entry for entry against printed panchang calendars of 14 cities. Use for 'festivals in November 2026', 'Ekadashi dates this month in London', 'Hindu holidays this month'.",
 		Title:       "Hindu Festivals (Month)",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsMonthInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}

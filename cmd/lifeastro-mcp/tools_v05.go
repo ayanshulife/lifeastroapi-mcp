@@ -113,7 +113,7 @@ type PanchangMonthlyInput struct {
 func registerPanchangMonthly(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "panchang_monthly",
-		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. With sheet=true it is a complete printable Hindu calendar page (Drik-Panchang style): tithi/nakshatra/moon-sign end-times, kshaya days, moonrise/moonset, Hindu month, samvat and every festival of each day. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'make a Hindu calendar for Delhi October 2027'.",
+		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. With sheet=true it is a complete printable Hindu calendar page (printed-panchang style): tithi/nakshatra/moon-sign end-times, kshaya days, moonrise/moonset, Hindu month, samvat and every festival of each day. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'make a Hindu calendar for Delhi October 2027'.",
 		Title:       "Panchang Monthly Calendar",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in PanchangMonthlyInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
