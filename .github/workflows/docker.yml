@@ -1,0 +1,67 @@
+# Builds the container image and pushes it to GitHub Container Registry:
+#   ghcr.io/ayanshulife/lifeastroapi-mcp:<version> and :latest
+# The official MCP Registry lists the server through this image
+# (server.json, registryType "oci").
+#
+# Runs on every v* tag, or manually (Actions → Docker image → Run workflow)
+# with an explicit version, e.g. to publish an image for an existing release.
+
+name: Docker image
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image version (e.g. 0.11.0)"
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: VERSION=${{ steps.ver.outputs.version }}
+          tags: |
+            ghcr.io/ayanshulife/lifeastroapi-mcp:${{ steps.ver.outputs.version }}
+            ghcr.io/ayanshulife/lifeastroapi-mcp:latest
+
+      - name: Check the image boots
+        run: |
+          OUT=$(docker run --rm -i ghcr.io/ayanshulife/lifeastroapi-mcp:${{ steps.ver.outputs.version }} </dev/null 2>&1 || true)
+          echo "$OUT"
+          echo "$OUT" | grep -q "LIFEASTRO_API_KEY"

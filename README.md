@@ -57,6 +57,14 @@ lifeastro-mcp </dev/null 2>&1 | head -1
    # Windows: rename to lifeastro-mcp.exe and add the folder to PATH
    ```
 
+### Docker
+
+```bash
+docker run -i --rm -e LIFEASTRO_API_KEY=dv_live_... ghcr.io/ayanshulife/lifeastroapi-mcp:latest
+```
+
+In an MCP client config, use `"command": "docker"` with `"args": ["run", "-i", "--rm", "-e", "LIFEASTRO_API_KEY", "ghcr.io/ayanshulife/lifeastroapi-mcp:latest"]` and set `LIFEASTRO_API_KEY` in `"env"`.
+
 ### Go developers — `go install`
 
 ```bash
