@@ -247,7 +247,7 @@ var liveDefaults = map[string]any{
 	"aspect": "trine", "asc_sign": "leo", "varga": "D9", "transit_planet": "Saturn",
 	"natal_planet": "Sun", "return_year": 2026, "md": "Jupiter", "ad": "Saturn", "pd": "Mercury", "sd": "Ketu",
 	"lot_sign": "cancer", "lord": "Jupiter", "birth_nak": 7, "year_month": "2026-11",
-	"week_start": "2026-11-02", "tz": "5.5", "star": "Regulus",
+	"week_start": "2026-11-02", "star": "Regulus",
 	"sign_a": "Aries", "sign_b": "Leo", "q": "Mumbai", "planet_a": "Sun", "planet_b": "Moon",
 	"observer_lat": 28.6139, "observer_lon": 77.2090, "number": 1, "n": 5, "maha": "Jupiter",
 	"koota": "nadi", "degree": 100, "decan": 2, "cusp": 7, "component": "sthana",
@@ -258,6 +258,7 @@ var liveDefaults = map[string]any{
 // liveToolArgs: per-tool sample values where the by-name default is wrong
 // or the property is tool-specific.
 var liveToolArgs = map[string]map[string]any{
+	"festivals_vrat":                {"type": "ekadashi"},
 	"chart_single_planet":           {"name": "Jupiter"},
 	"dasha_yogini_by_name":          {"name": "mangala"},
 	"numerology_advanced":           {"name": "Arjun Mehta"},
@@ -285,6 +286,7 @@ var liveToolArgs = map[string]map[string]any{
 	"eclipses_lunar":                {"start_date": "2026-01-01", "end_date": "2027-12-31"},
 	"muhurta_naamkaran":             {"date": "2026-11-20", "birth_date": "2026-11-05"},
 	"narrative_reference":           {"family": "yoga"},
+	"narrative_prashna":             {"topic": "career"},
 	"geo_place":                     {"id": "1275339"},
 	"remedy_by_rule_id":             {"id": "hanuman_chalisa"},
 	"remedy_mantra_by_id":           {"id": "hanuman_chalisa"},

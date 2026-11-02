@@ -75,7 +75,7 @@ func firstText(t *testing.T, res *mcp.CallToolResult) string {
 // expectedToolCount is the source of truth for "how many tools should
 // the MCP server expose right now". Bump this when adding a tool;
 // the registration test below catches accidental additions or removals.
-const expectedToolCount = 310
+const expectedToolCount = 311
 
 func TestListTools_AllRegistered(t *testing.T) {
 	t.Parallel()
@@ -297,6 +297,7 @@ func TestListTools_AllRegistered(t *testing.T) {
 		"narrative_lagna":                      true,
 		"narrative_marriage_outlook":           true,
 		"narrative_milan":                      true,
+		"narrative_prashna":                    true,
 		"narrative_moon_sign":                  true,
 		"narrative_nakshatra":                  true,
 		"narrative_planet_in_house":            true,
@@ -842,7 +843,12 @@ func TestTool_PrashnaAnswer_SendsHouseAndMoment(t *testing.T) {
 // asserted here rather than left to the live sweep, which cannot see it.
 func TestTool_TransitTools_SendBirthPrefixAndToday(t *testing.T) {
 	t.Parallel()
-	for _, tool := range []string{"transit_double_transit", "transit_tarabala", "transit_vedha", "transit_ashtakavarga", "ashtakavarga_kaksha", "narrative_transit_phal"} {
+	for _, tool := range []string{
+		"transit_double_transit", "transit_tarabala", "transit_vedha", "transit_ashtakavarga", "transit_small_panoti",
+		"ashtakavarga_kaksha", "ashtakavarga_transit_score",
+		"narrative_transit_phal", "narrative_dasha_phal", "narrative_transit_double", "narrative_transit_ashtakavarga",
+		"narrative_sade_sati_status", "narrative_sade_sati_phase", "narrative_sade_sati_history",
+	} {
 		session, log := newTestServer(t, 200, `{}`)
 		res := callTool(t, session, tool, map[string]any{
 			"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata",
@@ -932,5 +938,54 @@ func TestLowerTrim(t *testing.T) {
 		if got := lowerTrim(tc.in); got != tc.want {
 			t.Errorf("lowerTrim(%q) = %q, want %q", tc.in, got, tc.want)
 		}
+	}
+}
+
+func TestNarrativePrashna_TopicAndHouse(t *testing.T) {
+	t.Parallel()
+	session, log := newTestServer(t, 200, `{"sections":[]}`)
+	res := callTool(t, session, "narrative_prashna", map[string]any{
+		"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata",
+		"date": "2027-01-15", "time": "10:00", "topic": "career", "question_house": 7,
+	})
+	if res.IsError {
+		t.Fatalf("tool returned error: %s", firstText(t, res))
+	}
+	if log.paths[0] != "/v1/vedic/narrative/prashna" {
+		t.Errorf("upstream path = %q, want /v1/vedic/narrative/prashna", log.paths[0])
+	}
+	q := log.queries[0]
+	if q.Get("topic") != "career" || q.Get("date") != "2027-01-15" || q.Get("time") != "10:00" || q.Get("lat") != "19.076" {
+		t.Errorf("query = %v", q)
+	}
+	// The API reads question_house only when topic is absent; send one.
+	if q.Has("question_house") {
+		t.Errorf("question_house sent alongside topic: %v", q)
+	}
+
+	res = callTool(t, session, "narrative_prashna", map[string]any{
+		"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "date": "2027-01-15", "question_house": 7,
+	})
+	if res.IsError {
+		t.Fatalf("tool returned error: %s", firstText(t, res))
+	}
+	if q := log.queries[1]; q.Get("question_house") != "7" || q.Has("topic") {
+		t.Errorf("house-only query = %v", q)
+	}
+}
+
+func TestNarrativeMilan_GroomIsBoy(t *testing.T) {
+	t.Parallel()
+	session, log := newTestServer(t, 200, `{"sections":[]}`)
+	res := callTool(t, session, "narrative_milan", map[string]any{
+		"groom": map[string]any{"lat": 28.6139, "lon": 77.209, "date": "1992-11-03", "time": "14:45", "tz": "Asia/Kolkata"},
+		"bride": map[string]any{"lat": 19.076, "lon": 72.8777, "date": "1995-06-12", "time": "08:15", "tz": "Asia/Kolkata"},
+	})
+	if res.IsError {
+		t.Fatalf("tool returned error: %s", firstText(t, res))
+	}
+	q := log.queries[0]
+	if q.Get("boy.date") != "1992-11-03" || q.Get("girl.date") != "1995-06-12" {
+		t.Errorf("boy must be the groom and girl the bride: %v", q)
 	}
 }

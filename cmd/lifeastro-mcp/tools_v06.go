@@ -929,7 +929,7 @@ func registerTransitVedha(s *mcp.Server, c *apiClient) {
 func registerVarshaphalLord(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "varshaphal_lord",
-		Description: "Get the Varsha Lord (year ruler) for an annual chart — the planet that rules the Varshaphal year based on the Tajika system. The Varsha Lord strongly influences the themes of the solar-return year. Use for 'varsha lord 2026', 'year ruler annual chart', 'who rules my varshaphal year'.",
+		Description: "Get the Varsha Lord (Varshesha, year ruler) for an annual chart, chosen by the Tajika Panchadhikari rule from the five office-bearers (Munthesh, Janmesh, Varsha Lagnesh, Trirashipati, Dina/Ratripati); the response also lists the candidates and the hora lord of the return. The Varsha Lord strongly influences the themes of the solar-return year. Use for 'varsha lord 2026', 'year ruler annual chart', 'who rules my varshaphal year'.",
 		Title:       "Varshaphal Lord (Year Ruler)",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in VarshaphalInput) (*mcp.CallToolResult, any, error) {
 		q := in.BirthInput.toQuery()

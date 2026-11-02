@@ -59,6 +59,7 @@ func registerV07Tools(s *mcp.Server, c *apiClient) {
 	registerNarrativePlanetInSign(s, c)
 	registerNarrativePlanetsInHouses(s, c)
 	registerNarrativePlanetsInSigns(s, c)
+	registerNarrativePrashna(s, c)
 	registerNarrativeProfile(s, c)
 	registerNarrativeSadeSatiHistory(s, c)
 	registerNarrativeSadeSatiPhase(s, c)
@@ -178,7 +179,7 @@ func registerNarrativeCareerOutlook(s *mcp.Server, c *apiClient) {
 func registerNarrativeDashaPhal(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "narrative_dasha_phal",
-		Description: "Get the Dasha Phal (period interpretation) narrative for the currently running Vimshottari Mahadasha + Antardasha combination — a human-readable explanation of what this dasha pair typically brings and how it interacts with the natal chart. Use for 'what does my current dasha mean', 'dasha phal', 'interpret my mahadasha and antardasha'.",
+		Description: "Get the Dasha Phal (period interpretation) narrative for the Vimshottari dasha running today — Mahadasha, Antardasha and the deeper levels down to sookshma and prana, with dasha-sandhi sections when a period change is near, and how they interact with the natal chart. Use for 'what does my current dasha mean', 'dasha phal', 'interpret my mahadasha and antardasha'.",
 		Title:       "Dasha Phal Narrative",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativeBirthInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/vedic/narrative/dasha-phal", in.toDualQuery())
@@ -372,23 +373,52 @@ type NarrativeMilanInput struct {
 func registerNarrativeMilan(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "narrative_milan",
-		Description: "Get a narrative compatibility analysis for a couple — goes beyond the numeric Ashtakoota score with a written interpretation of compatibility across all factors (guna milan, mangal dosha, dashas, navamsa). Use for 'detailed match making narrative', 'compatibility reading for couple', 'written kundli matching report'.",
+		Description: "Get a narrative compatibility analysis for a couple — a written reading of the Ashtakoota result (verdict and each koota; Tara and Graha Maitri are scored both ways) plus synastry sections from the planets of both charts. Use for 'detailed match making narrative', 'compatibility reading for couple', 'written kundli matching report'.",
 		Title:       "Milan (Compatibility) Narrative",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativeMilanInput) (*mcp.CallToolResult, any, error) {
 		// Handler reads boy.date/boy.time/boy.tz and girl.date/girl.time/girl.tz
 		// via parsePrefixedMoment(r, "boy.") / parsePrefixedMoment(r, "girl.").
 		// The bride_*/groom_* params from matchMakingQuery are never read here.
+		// API convention: boy = groom, girl = bride.
 		q := url.Values{}
-		q.Set("boy.date", in.BrideBirth.Date)
-		q.Set("boy.time", in.BrideBirth.Time)
-		q.Set("boy.tz", in.BrideBirth.Tz)
-		q.Set("girl.date", in.GroomBirth.Date)
-		q.Set("girl.time", in.GroomBirth.Time)
-		q.Set("girl.tz", in.GroomBirth.Tz)
+		q.Set("boy.date", in.GroomBirth.Date)
+		q.Set("boy.time", in.GroomBirth.Time)
+		q.Set("boy.tz", in.GroomBirth.Tz)
+		q.Set("girl.date", in.BrideBirth.Date)
+		q.Set("girl.time", in.BrideBirth.Time)
+		q.Set("girl.tz", in.BrideBirth.Tz)
 		if in.Lang != "" {
 			q.Set("lang", in.Lang)
 		}
 		return callPassthrough(ctx, c, "/v1/vedic/narrative/milan", q)
+	})
+}
+
+// NarrativePrashnaInput is the moment and place of the question plus what
+// it is about: a topic, or the house that signifies it.
+type NarrativePrashnaInput struct {
+	PrashnaInput
+	Topic         string `json:"topic,omitempty" jsonschema:"optional subject of the question: career, financial, health, litigation, marriage, missing_person, property or travel"`
+	QuestionHouse int    `json:"question_house,omitempty" jsonschema:"optional house (1-12) of the question, used when topic is not given: 2 money, 4 property, 6 illness/disputes, 7 marriage, 9 long travel, 10 career, ..."`
+	Lang          string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+}
+
+func registerNarrativePrashna(s *mcp.Server, c *apiClient) {
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "narrative_prashna",
+		Description: "Get a written Prashna (horary) reading for the moment and place a question is asked — the Prashna lagna and the Moon, then the reading for the question's topic (career, financial, health, litigation, marriage, missing_person, property or travel) for that lagna. Pass topic, or question_house when only the house is known; with neither, only the lagna and Moon sections come back. Defaults to the current moment. Use for 'prashna reading for my question', 'horary reading about my job', 'will my marriage happen, prashna'.",
+		Title:       "Prashna (Horary) Narrative",
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativePrashnaInput) (*mcp.CallToolResult, any, error) {
+		q := in.PrashnaInput.toQuery()
+		if t := strings.TrimSpace(in.Topic); t != "" {
+			q.Set("topic", t)
+		} else if in.QuestionHouse != 0 {
+			q.Set("question_house", strconv.Itoa(in.QuestionHouse))
+		}
+		if in.Lang != "" {
+			q.Set("lang", in.Lang)
+		}
+		return callPassthrough(ctx, c, "/v1/vedic/narrative/prashna", q)
 	})
 }
 
@@ -525,7 +555,7 @@ func registerNarrativeTransitDouble(s *mcp.Server, c *apiClient) {
 func registerNarrativeTransitPhal(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "narrative_transit_phal",
-		Description: "Get the Transit Phal (gochar results) narrative — a written analysis of all current major planetary transits over the natal chart, their house positions from Moon, and the classical effects expected from each transit. Use for 'gochar phal', 'transit results for my chart', 'what do current transits mean for me'.",
+		Description: "Get the Transit Phal (gochar results) narrative for today — the slow grahas (Mars, Jupiter, Saturn, Rahu, Ketu) by sign, their transit counted from the natal Moon and from the natal lagna, Sade Sati while it runs, the Sun's transit house, and Jupiter/Saturn/Rahu passing over natal grahas. Use for 'gochar phal', 'transit results for my chart', 'what do current transits mean for me'.",
 		Title:       "Transit Phal Narrative",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativeBirthInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/vedic/narrative/transit-phal", in.toDualQuery())
