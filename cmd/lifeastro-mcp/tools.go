@@ -115,6 +115,12 @@ func registerAllTools(server *mcp.Server, client *apiClient) {
 	// doshas, locales, narrative axes, ayanamsas, endpoint costs).
 	registerV11Tools(server, client)
 
+	// v0.12 — 9 generic data tools (ids only, no prose): chart kundli-facts,
+	// yogas, doshas, birth-time sensitivity; Sade Sati windows and planet
+	// transit windows; remedies for a graha; milan overlay and summary.
+	// milan_dasha_sync also takes the new timeline options.
+	registerV12Tools(server, client)
+
 	// v0.7 — 60 additional tools: vedic narrative (32: career-outlook/
 	// dasha-phal/dasha-tree-phal/doshas/finance-outlook/horoscope-daily-
 	// by-lagna/by-moon/tamil/weekly-by-lagna/by-moon/house-lord/house-lords-

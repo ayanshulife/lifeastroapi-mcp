@@ -4,7 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/ayanshulife/lifeastroapi-mcp.svg)](https://pkg.go.dev/github.com/ayanshulife/lifeastroapi-mcp)
 [![Release](https://img.shields.io/github/v/release/ayanshulife/lifeastroapi-mcp)](https://github.com/ayanshulife/lifeastroapi-mcp/releases)
 
-**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 311 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
+**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 320 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
 
 LifeAstroAPI is a REST [astrology API](https://lifeastroapi.com/apis/) for Vedic astrology, panchang, Hindu festivals, kundli, muhurat, numerology and Western charts. Free tier: 1,500 credits a month, no card — [get a key](https://lifeastroapi.com/signup/).
 
@@ -154,24 +154,24 @@ Any MCP-aware client supports the same shape — `command` + `env` with the abso
 
 ## Tools
 
-The server exposes **311 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
+The server exposes **320 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
 
 | Domain | Tools | Examples |
 |---|---|---|
 | Panchang | 29 | `panchang_abhijit`, `panchang_advanced`, `panchang_amrit_kalam`, `panchang_basic` |
-| Birth chart (Vedic) | 22 | `chart_ascendant`, `chart_ashtakavarga`, `chart_ashtakvarga_planet`, `chart_aspects` |
+| Birth chart (Vedic) | 26 | `chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sensitivity`, `chart_ascendant` |
 | Ashtakavarga | 4 | `ashtakavarga_bhinna`, `ashtakavarga_kaksha`, `ashtakavarga_sarva`, `ashtakavarga_transit_score` |
 | Dasha | 14 | `dasha_char_antardashas`, `dasha_char_current`, `dasha_char_full`, `dasha_char_major` |
-| Compatibility (Milan) | 14 | `ashtakoota_breakdown`, `mangal_dosha`, `match_making_score`, `milan_ashtakoota_single` |
+| Compatibility (Milan) | 16 | `milan_summary`, `milan_overlay`, `milan_dasha_sync`, `match_making_score`, `ashtakoota_breakdown` |
 | Muhurta | 11 | `muhurta_best_time`, `muhurta_chandra_bala`, `muhurta_graha_pravesh`, `muhurta_naamkaran` |
-| Transits & Sade Sati | 8 | `sade_sati`, `transit_ashtakavarga`, `transit_double_transit`, `transit_small_panoti` |
+| Transits & Sade Sati | 10 | `sade_sati`, `transit_sade_sati_windows`, `transit_windows`, `transit_double_transit`, `transit_small_panoti` |
 | Calendar, festivals & eclipses | 9 | `calendar_adhik_maas`, `calendar_month`, `calendar_ritu`, `calendar_samvatsara` |
 | Planet moments | 4 | `planet_combustion_window`, `planet_ingress`, `planet_retrograde_window`, `planet_speed` |
 | Prashna (horary) | 5 | `prashna_answer`, `prashna_arudha`, `prashna_chart`, `prashna_lagna_lord` |
 | Numerology | 9 | `numerology_advanced`, `numerology_challenges`, `numerology_conductor`, `numerology_destiny` |
 | Varshaphal | 7 | `varshaphal_chart`, `varshaphal_harsha_bala`, `varshaphal_lord`, `varshaphal_mudda_dasha` |
 | Lal Kitab | 3 | `lalkitab_chart`, `lalkitab_dasha`, `lalkitab_dasha_current` |
-| Remedies | 10 | `remedy_by_rule_id`, `remedy_daan_by_id`, `remedy_lalkitab_for_placement`, `remedy_lalkitab_list` |
+| Remedies | 11 | `remedy_for_graha`, `remedy_by_rule_id`, `remedy_daan_by_id`, `remedy_lalkitab_for_placement` |
 | Narrative interpretations | 37 | `narrative_career_outlook`, `narrative_dasha_phal`, `narrative_dasha_tree_phal`, `narrative_divisional` |
 | Horoscopes | 3 | `horoscope_daily`, `horoscope_monthly`, `horoscope_weekly` |
 | Reports | 12 | `report_dasha_analysis`, `report_horoscope_daily`, `report_horoscope_monthly`, `report_horoscope_weekly` |
@@ -179,6 +179,8 @@ The server exposes **311 tools** across Vedic and Western astrology. The full li
 | Geo | 4 | `geo_place`, `geo_reverse`, `geo_search`, `geo_timezone` |
 | Western astrology | 92 | `western_astrocartography_local_space`, `western_astrocartography_planet_lines`, `western_compatibility_sun_sign`, `western_composite_aspects` |
 | Catalogs & discovery | 6 | `meta_ayanamsas`, `meta_endpoints`, `meta_vedic_doshas`, `meta_vedic_locales` |
+
+The data tools (`chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sensitivity`, `transit_sade_sati_windows`, `transit_windows`, `remedy_for_graha`, `milan_overlay`, `milan_summary`) return ids and numbers rather than prose, so the assistant can reason over the chart itself: planet ids `sun` … `ketu`, `sign_index` 0-based (0 = Aries), `house` 1-based whole-sign from the lagna, nakshatra index 0-based (0 = Ashwini), every instant as `*_local` plus `*_jd`, and a `skipped` object for anything that could not be computed.
 
 ### How dates work
 
@@ -230,7 +232,7 @@ LIFEASTRO_API_KEY=dv_live_... make live LIVE_SKIP=        # include reports
 
 ## Roadmap
 
-- **v0.11 (current):** Local stdio MCP server, 311 tools, every tool verified against the live API (`make live`)
+- **v0.11 (current):** Local stdio MCP server, 320 tools, every tool verified against the live API (`make live`)
 - **v1.0 (planned):** Stable tool surface; semantic versioning kicks in
 - **Remote HTTP MCP (separate project):** Hosted MCP endpoint at `mcp.lifeastroapi.com` for ChatGPT and web/mobile MCP clients — tracked separately from this repo
 

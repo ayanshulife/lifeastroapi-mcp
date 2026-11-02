@@ -287,6 +287,8 @@ var liveToolArgs = map[string]map[string]any{
 	"muhurta_naamkaran":             {"date": "2026-11-20", "birth_date": "2026-11-05"},
 	"narrative_reference":           {"family": "yoga"},
 	"narrative_prashna":             {"topic": "career"},
+	"remedy_for_graha":              {"graha": "saturn", "reason": "debilitated"},
+	"milan_dasha_sync":              {"marriage_windows": true, "years": 3},
 	"geo_place":                     {"id": "1275339"},
 	"remedy_by_rule_id":             {"id": "hanuman_chalisa"},
 	"remedy_mantra_by_id":           {"id": "hanuman_chalisa"},

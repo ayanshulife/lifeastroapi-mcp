@@ -75,7 +75,7 @@ func firstText(t *testing.T, res *mcp.CallToolResult) string {
 // expectedToolCount is the source of truth for "how many tools should
 // the MCP server expose right now". Bump this when adding a tool;
 // the registration test below catches accidental additions or removals.
-const expectedToolCount = 311
+const expectedToolCount = 320
 
 func TestListTools_AllRegistered(t *testing.T) {
 	t.Parallel()
@@ -264,6 +264,15 @@ func TestListTools_AllRegistered(t *testing.T) {
 		"geo_timezone":                         true,
 		"milan_ashtakoota_single":              true,
 		"milan_dasha_sync":                     true,
+		"chart_kundli_facts":                   true,
+		"chart_yogas":                          true,
+		"chart_doshas":                         true,
+		"chart_sensitivity":                    true,
+		"transit_sade_sati_windows":            true,
+		"transit_windows":                      true,
+		"remedy_for_graha":                     true,
+		"milan_overlay":                        true,
+		"milan_summary":                        true,
 		"milan_dhan_yog":                       true,
 		"milan_longevity":                      true,
 		"milan_mahendra":                       true,
@@ -987,5 +996,78 @@ func TestNarrativeMilan_GroomIsBoy(t *testing.T) {
 	q := log.queries[0]
 	if q.Get("boy.date") != "1992-11-03" || q.Get("girl.date") != "1995-06-12" {
 		t.Errorf("boy must be the groom and girl the bride: %v", q)
+	}
+}
+
+// v0.12 data tools: chart routes read the birth chart unprefixed, the window
+// routes read it under birth.* with from/tz unprefixed, milan uses boy/girl.
+func TestV12DataTools_QueryMapping(t *testing.T) {
+	t.Parallel()
+	birth := map[string]any{"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata"}
+	couple := map[string]any{
+		"groom_lat": 19.076, "groom_lon": 72.8777, "groom_date": "1990-01-15", "groom_time": "10:30", "groom_tz": "Asia/Kolkata",
+		"bride_lat": 28.6139, "bride_lon": 77.209, "bride_date": "1992-03-20", "bride_time": "08:15", "bride_tz": "Asia/Kolkata",
+	}
+	with := func(base map[string]any, extra map[string]any) map[string]any {
+		out := map[string]any{}
+		for k, v := range base {
+			out[k] = v
+		}
+		for k, v := range extra {
+			out[k] = v
+		}
+		return out
+	}
+	cases := []struct {
+		tool, path string
+		args       map[string]any
+		want       map[string]string
+		absent     []string
+	}{
+		{"chart_kundli_facts", "/v1/chart/kundli-facts", with(birth, map[string]any{"vargas": "D9,D10", "include": "all", "gender": "Male"}),
+			map[string]string{"date": "1990-01-15", "time": "10:30", "lat": "19.076", "vargas": "D9,D10", "include": "all", "gender": "male"}, []string{"birth.date"}},
+		{"chart_yogas", "/v1/chart/yogas", with(birth, map[string]any{"all": true}),
+			map[string]string{"date": "1990-01-15", "all": "true"}, []string{"gender"}},
+		{"chart_doshas", "/v1/chart/doshas", birth,
+			map[string]string{"date": "1990-01-15", "tz": "Asia/Kolkata"}, []string{"all"}},
+		{"chart_sensitivity", "/v1/chart/sensitivity", with(birth, map[string]any{"window": 60, "vargas": "D9", "topocentric_moon": true}),
+			map[string]string{"date": "1990-01-15", "window": "60", "vargas": "D9", "topocentric_moon": "true"}, nil},
+		{"transit_sade_sati_windows", "/v1/transit/sade-sati/windows", with(birth, map[string]any{"from": "2027-01-15", "years": 30, "include_past": true, "local_tz": "UTC"}),
+			map[string]string{"birth.date": "1990-01-15", "birth.time": "10:30", "birth.tz": "Asia/Kolkata", "from": "2027-01-15", "years": "30", "include_past": "true", "tz": "UTC"}, []string{"date"}},
+		{"transit_windows", "/v1/transit/windows", map[string]any{"planet": "Saturn", "from": "2027-01-15", "years": 10, "birth": birth},
+			map[string]string{"planet": "saturn", "from": "2027-01-15", "years": "10", "birth.date": "1990-01-15", "birth.lat": "19.076", "birth.lon": "72.8777"}, []string{"date", "lat"}},
+		{"transit_windows", "/v1/transit/windows", map[string]any{"planet": "jupiter"},
+			map[string]string{"planet": "jupiter"}, []string{"birth.date", "from"}},
+		{"remedy_for_graha", "/v1/vedic/remedies/for-graha", map[string]any{"graha": "Saturn", "reason": "dosha:sade_sati", "include": "pooja", "lang": "hi"},
+			map[string]string{"graha": "saturn", "reason": "dosha:sade_sati", "include": "pooja", "locale": "hi"}, []string{"category"}},
+		{"milan_overlay", "/v1/milan/overlay", couple,
+			map[string]string{"boy.date": "1990-01-15", "girl.date": "1992-03-20", "girl.lat": "28.6139"}, nil},
+		{"milan_summary", "/v1/milan/summary", with(couple, map[string]any{"from": "2027-01-15", "include_kundli_facts": true}),
+			map[string]string{"boy.time": "10:30", "girl.time": "08:15", "from": "2027-01-15", "include": "kundli_facts"}, []string{"tz"}},
+		{"milan_dasha_sync", "/v1/milan/dasha-sync", with(couple, map[string]any{"marriage_windows": true, "from": "2027-01-15", "years": 5}),
+			map[string]string{"boy.lat": "19.076", "girl.lon": "77.209", "marriage_windows": "true", "from": "2027-01-15", "years": "5"}, []string{"timeline"}},
+		{"milan_dasha_sync", "/v1/milan/dasha-sync", couple,
+			map[string]string{"boy.date": "1990-01-15"}, []string{"timeline", "marriage_windows", "years", "from"}},
+	}
+	for _, tc := range cases {
+		session, log := newTestServer(t, 200, `{}`)
+		res := callTool(t, session, tc.tool, tc.args)
+		if res.IsError {
+			t.Fatalf("%s: tool returned error: %s", tc.tool, firstText(t, res))
+		}
+		if log.paths[0] != tc.path {
+			t.Errorf("%s: path = %q, want %q", tc.tool, log.paths[0], tc.path)
+		}
+		q := log.queries[0]
+		for k, v := range tc.want {
+			if q.Get(k) != v {
+				t.Errorf("%s: %s = %q, want %q (query %v)", tc.tool, k, q.Get(k), v, q)
+			}
+		}
+		for _, k := range tc.absent {
+			if q.Has(k) {
+				t.Errorf("%s: %s should not be sent (query %v)", tc.tool, k, q)
+			}
+		}
 	}
 }

@@ -473,10 +473,10 @@ func registerGeoTimezone(s *mcp.Server, c *apiClient) {
 func registerMilanDashaSync(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "milan_dasha_sync",
-		Description: "Check Dasha synchrony between two partners — are they running compatible mahadasha lords at the same time? Good dasha synchrony indicates the couple will flourish together during major life events. Use for 'dasha compatibility', 'are our dashas compatible', 'dasha sync for marriage'.",
+		Description: "Get the Vimshottari Mahadasha each partner is running now, when each ends and whether the two overlap. With timeline=true it adds both partners' Mahadasha/Antardasha periods on one aligned timeline (from, years: default 10, max 30); with marriage_windows=true each span is tagged favourable, neutral or avoid for marriage with reason ids (7th lord, Venus or Jupiter Antardasha favourable; Rahu/Ketu or 6th/8th/12th lord avoid). Each partner's dates match dasha_vimshottari_full. Data, not a muhurta. Use for 'dasha compatibility', 'when is a good period for our marriage', 'dasha sync for marriage'.",
 		Title:       "Milan Dasha Sync",
-	}, func(ctx context.Context, _ *mcp.CallToolRequest, in AshtakootaInput) (*mcp.CallToolResult, any, error) {
-		return callPassthrough(ctx, c, "/v1/milan/dasha-sync", boyGirlQuery(in))
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MilanDashaSyncInput) (*mcp.CallToolResult, any, error) {
+		return callPassthrough(ctx, c, "/v1/milan/dasha-sync", in.toQuery())
 	})
 }
 
