@@ -182,7 +182,7 @@ type TwoSignInput struct {
 // SabianInput holds an absolute zodiac degree (1–360) for Sabian symbols.
 type SabianInput struct {
 	Degree int    `json:"degree" jsonschema:"absolute zodiac degree 1–360 (1 = Aries 1°, 30 = Aries 30°, 31 = Taurus 1°, … 360 = Pisces 30°)"`
-	Lang   string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 }
 
 // WesternPrimaryDirectionsInput holds birth + key + max_age for primary directions.
@@ -211,7 +211,7 @@ func (p WesternPrimaryDirectionsInput) toQuery() url.Values {
 type NumerologyDOBLangInput struct {
 	DOB     string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD format"`
 	RefDate string `json:"ref_date,omitempty" jsonschema:"optional reference date YYYY-MM-DD (defaults to today) for personal-periods"`
-	Lang    string `json:"lang,omitempty" jsonschema:"optional language for lucky factors: en (default), hi, mr"`
+	Lang    string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NumerologyDOBLangInput) toQuery() url.Values {
@@ -230,7 +230,7 @@ func (n NumerologyDOBLangInput) toQuery() url.Values {
 type NumerologyAdvancedInput struct {
 	Name string `json:"name" jsonschema:"full name (used for Karmic Lessons, Hidden Passion, Balance, Sub-conscious Self)"`
 	DOB  string `json:"dob,omitempty" jsonschema:"optional date of birth YYYY-MM-DD (required for Maturity Number)"`
-	Lang string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NumerologyAdvancedInput) toQuery() url.Values {
@@ -531,7 +531,7 @@ func registerWesternTransitSummary(s *mcp.Server, c *apiClient) {
 func registerWesternNarrativeYearly(s *mcp.Server, c *apiClient) {
 	type Input struct {
 		Sign string `json:"sign" jsonschema:"tropical zodiac sign (Aries through Pisces)"`
-		Lang string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+		Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "western_narrative_yearly",
@@ -551,7 +551,7 @@ func registerWesternNarrativeDecan(s *mcp.Server, c *apiClient) {
 	type Input struct {
 		Sign  string `json:"sign" jsonschema:"tropical zodiac sign"`
 		Decan int    `json:"decan" jsonschema:"decan number: 1 (degrees 0–10), 2 (10–20), or 3 (20–30)"`
-		Lang  string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+		Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "western_narrative_decan",
@@ -586,7 +586,7 @@ func registerWesternNarrativeSabian(s *mcp.Server, c *apiClient) {
 func registerWesternNarrativeFixedStar(s *mcp.Server, c *apiClient) {
 	type Input struct {
 		Star string `json:"star" jsonschema:"fixed star name (e.g. Algol, Regulus, Sirius, Spica, Antares, Aldebaran, Vega, Arcturus)"`
-		Lang string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+		Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "western_narrative_fixed_star",
@@ -604,7 +604,7 @@ func registerWesternNarrativeFixedStar(s *mcp.Server, c *apiClient) {
 func registerWesternNarrativeTimelordProfection(s *mcp.Server, c *apiClient) {
 	type Input struct {
 		House int    `json:"house" jsonschema:"activated profection house 1–12 (from western_profections_annual)"`
-		Lang  string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+		Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "western_narrative_timelord_profection",
@@ -623,7 +623,7 @@ func registerWesternNarrativeTimelordProfection(s *mcp.Server, c *apiClient) {
 func registerWesternNarrativeTimelordZR(s *mcp.Server, c *apiClient) {
 	type Input struct {
 		Lord string `json:"lord" jsonschema:"Zodiacal Releasing lord name (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn)"`
-		Lang string `json:"lang,omitempty" jsonschema:"optional language: en (default), hi, mr"`
+		Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "western_narrative_timelord_zr",

@@ -44,7 +44,7 @@ type ChartAshtakvargaPlanetInput struct {
 }
 
 func registerChartAshtakvargaPlanet(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_ashtakvarga_planet",
 		Description: "Get one planet's Bhinnashtakavarga row from the chart endpoint — the benefic points (bindus) that planet holds in each of the 12 signs, with its total. A compact single-planet alternative to the full ashtakavarga table. Use for 'Jupiter's ashtakavarga points', 'how many bindus does Saturn have in each sign'.",
 		Title:       "Ashtakavarga for One Planet",
@@ -55,7 +55,7 @@ func registerChartAshtakvargaPlanet(s *mcp.Server, c *apiClient) {
 
 type NarrativeReferenceInput struct {
 	Family string `json:"family" jsonschema:"glossary family to read, e.g. yoga, dosha, argala — the short name, or a full rule prefix such as vedic.L1.yoga"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, or another locale from meta_vedic_locales"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeReference(s *mcp.Server, c *apiClient) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -1068,6 +1069,208 @@ func TestV12DataTools_QueryMapping(t *testing.T) {
 			if q.Has(k) {
 				t.Errorf("%s: %s should not be sent (query %v)", tc.tool, k, q)
 			}
+		}
+	}
+}
+
+// noLanguageTools are the Vedic tools that deliberately have no language
+// input: their endpoints return only numbers, times, indices and ids, so a
+// language would change nothing (checked against the API with locale=gu).
+// A new Vedic tool must either take a language or be listed here.
+var noLanguageTools = map[string]bool{
+	"ashtakavarga_sarva": true, "chart_bhavabala": true, "chart_doshas": true, "chart_sensitivity": true,
+	"chart_yogas": true, "match_making_score": true, "milan_overlay": true, "muhurta_chandra_bala": true,
+	"muhurta_tara_bala": true, "panchang_abhijit": true, "panchang_brahma_muhurat": true,
+	"panchang_durmuhurta": true, "panchang_gulika": true, "panchang_moonrise_moonset": true,
+	"panchang_pradosh_kaal": true, "panchang_rahu_kaal": true, "panchang_sunrise_sunset": true,
+	"panchang_yamaganda": true, "sade_sati": true, "transit_sade_sati_windows": true,
+	"transit_small_panoti": true, "transit_small_panoti_history": true, "transit_windows": true,
+	"varshaphal_muntha": true, "varshaphal_solar_return_jd": true,
+}
+
+// Every language input carries the same, current language list: an assistant
+// picks the language from this text. Western, Tarot, geo and meta tools are
+// English-only, except the Western narrative tools (en, hi, mr).
+func TestLanguageInputs(t *testing.T) {
+	t.Parallel()
+	session, _ := newTestServer(t, 200, `{}`)
+	out, err := session.ListTools(t.Context(), &mcp.ListToolsParams{})
+	if err != nil {
+		t.Fatalf("list tools: %v", err)
+	}
+	vedic, western := 0, 0
+	for _, tl := range out.Tools {
+		raw, err := json.Marshal(tl.InputSchema)
+		if err != nil {
+			t.Fatalf("%s: marshal schema: %v", tl.Name, err)
+		}
+		var sc struct {
+			Properties map[string]struct {
+				Description string `json:"description"`
+			} `json:"properties"`
+			Required []string `json:"required"`
+		}
+		if err := json.Unmarshal(raw, &sc); err != nil {
+			t.Fatalf("%s: decode schema: %v", tl.Name, err)
+		}
+		lang, hasLang := sc.Properties["lang"]
+		locale, hasLocale := sc.Properties["locale"]
+		if hasLang && hasLocale {
+			t.Errorf("%s: has both lang and locale", tl.Name)
+		}
+		for _, r := range sc.Required {
+			if r == "lang" || r == "locale" {
+				t.Errorf("%s: %s must be optional", tl.Name, r)
+			}
+		}
+		desc := lang.Description + locale.Description
+		englishOnly := false
+		for _, pre := range []string{"western_", "tarot_", "geo_", "meta_"} {
+			if strings.HasPrefix(tl.Name, pre) {
+				englishOnly = true
+			}
+		}
+		switch {
+		case strings.HasPrefix(tl.Name, "western_narrative_"):
+			western++
+			if desc != westernLanguageDesc {
+				t.Errorf("%s: language description = %q, want %q", tl.Name, desc, westernLanguageDesc)
+			}
+		case englishOnly:
+			if hasLang || hasLocale {
+				t.Errorf("%s: English-only tool must not take a language", tl.Name)
+			}
+		case noLanguageTools[tl.Name]:
+			if hasLang || hasLocale {
+				t.Errorf("%s: listed in noLanguageTools but takes a language", tl.Name)
+			}
+		default:
+			vedic++
+			if desc != vedicLanguageDesc {
+				t.Errorf("%s: language description = %q, want %q", tl.Name, desc, vedicLanguageDesc)
+			}
+			if hasLocale && strings.Contains(tl.Description, "`lang`") || hasLang && strings.Contains(tl.Description, "`locale`") {
+				t.Errorf("%s: description names the wrong language input", tl.Name)
+			}
+		}
+	}
+	if vedic != 188 || western != 7 {
+		t.Errorf("language inputs: %d Vedic + %d Western tools, want 188 + 7", vedic, western)
+	}
+}
+
+// The language reaches the API for one tool of every family, under the
+// query parameter that family's endpoint reads, next to the tool's own
+// parameters (birth.* for transit-style tools, boy.*/girl.* for milan).
+func TestLanguageForwarded(t *testing.T) {
+	t.Parallel()
+	birth := map[string]any{"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata"}
+	place := map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "date": "2026-11-13"}
+	couple := map[string]any{
+		"groom_lat": 19.076, "groom_lon": 72.8777, "groom_date": "1990-01-15", "groom_time": "10:30", "groom_tz": "Asia/Kolkata",
+		"bride_lat": 28.6139, "bride_lon": 77.209, "bride_date": "1992-03-20", "bride_time": "08:15", "bride_tz": "Asia/Kolkata",
+	}
+	with := func(base map[string]any, extra map[string]any) map[string]any {
+		out := map[string]any{}
+		for k, v := range base {
+			out[k] = v
+		}
+		for k, v := range extra {
+			out[k] = v
+		}
+		return out
+	}
+	cases := []struct {
+		tool, path string
+		args       map[string]any
+		input      string // the tool's language input
+		param      string // the query parameter it becomes
+		want       map[string]string
+	}{
+		// Data tools: `locale` added by addLocalizedTool.
+		{"panchang_today", "/v1/panchang/summary", place, "locale", "locale", map[string]string{"date": "2026-11-13"}},
+		{"panchang_tithi", "/v1/panchang/tithi", place, "locale", "locale", nil},
+		{"calendar_ritu", "/v1/calendar/ritu", map[string]any{"date": "2026-11-13", "tz": "Asia/Kolkata"}, "locale", "locale", nil},
+		{"eclipses_solar", "/v1/eclipses/solar", map[string]any{"start_date": "2026-01-01", "end_date": "2027-12-31"}, "locale", "locale", nil},
+		{"planet_ingress", "/v1/planet-moments/ingress", map[string]any{"planet": "Jupiter", "date": "2026-11-13"}, "locale", "locale", nil},
+		{"chart_planets", "/v1/chart/planets", birth, "locale", "locale", map[string]string{"date": "1990-01-15"}},
+		{"chart_divisional", "/v1/chart/divisional/D9", with(birth, map[string]any{"varga": "D9"}), "locale", "locale", nil},
+		{"dasha_current", "/v1/dasha/vimshottari/current", birth, "locale", "locale", nil},
+		{"dasha_char_full", "/v1/dasha/char", birth, "locale", "locale", nil},
+		{"ashtakavarga_bhinna", "/v1/ashtakavarga/bhinna/Jupiter", with(birth, map[string]any{"planet": "Jupiter"}), "locale", "locale", map[string]string{"birth.date": "1990-01-15"}},
+		{"transit_tarabala", "/v1/transit/tarabala", birth, "locale", "locale", map[string]string{"birth.date": "1990-01-15", "birth.tz": "Asia/Kolkata"}},
+		{"transits_now", "/v1/transit/positions", map[string]any{"date": "2026-11-13"}, "locale", "locale", map[string]string{"date": "2026-11-13"}},
+		{"mangal_dosha", "/v1/milan/mangal-dosha", birth, "locale", "locale", map[string]string{"birth.date": "1990-01-15"}},
+		{"ashtakoota_breakdown", "/v1/milan/ashtakoota", couple, "locale", "locale", map[string]string{"boy.date": "1990-01-15", "girl.date": "1992-03-20"}},
+		{"milan_summary", "/v1/milan/summary", couple, "locale", "locale", map[string]string{"boy.time": "10:30"}},
+		{"muhurta_vivah", "/v1/muhurta/vivah", place, "locale", "locale", nil},
+		{"prashna_chart", "/v1/prashna/chart", place, "locale", "locale", nil},
+		{"varshaphal_chart", "/v1/varshaphal/chart", with(birth, map[string]any{"year": 2027}), "locale", "locale", map[string]string{"year": "2027"}},
+		{"lalkitab_chart", "/v1/lalkitab/chart", birth, "locale", "locale", nil},
+		// Tools with their own language field.
+		{"festivals_month", "/v1/festivals/month", map[string]any{"year": 2026, "month": 11}, "locale", "locale", nil},
+		{"panchang_monthly", "/v1/panchang/monthly", map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "year": 2026, "month": 11}, "locale", "locale", nil},
+		{"horoscope_daily", "/v1/horoscope/daily", map[string]any{"rashi": "Aries"}, "lang", "lang", nil},
+		{"numerology_full", "/v1/numerology/full", map[string]any{"name": "Arjun Mehta", "dob": "1990-01-15"}, "lang", "lang", nil},
+		{"narrative_yearly_bhavishyafal", "/v1/vedic/narrative/yearly-bhavishyafal", with(birth, map[string]any{"year": 2027}), "lang", "lang", map[string]string{"birth.date": "1990-01-15"}},
+		{"narrative_horoscope_daily_tamil", "/v1/vedic/narrative/horoscope/daily-tamil", with(birth, map[string]any{"on_date": "2026-11-13"}), "lang", "lang", map[string]string{"transit_date": "2026-11-13", "date": "1990-01-15"}},
+		{"remedy_for_graha", "/v1/vedic/remedies/for-graha", map[string]any{"graha": "saturn", "reason": "debilitated"}, "lang", "locale", nil},
+		{"remedy_lalkitab_list", "/v1/vedic/remedies/lal-kitab", map[string]any{}, "locale", "locale", nil},
+		{"western_narrative_yearly", "/v1/western/narrative/yearly", map[string]any{"sign": "Leo"}, "lang", "lang", nil},
+	}
+	for _, tc := range cases {
+		// With the language set it is forwarded.
+		session, log := newTestServer(t, 200, `{}`)
+		res := callTool(t, session, tc.tool, with(tc.args, map[string]any{tc.input: "gu"}))
+		if res.IsError {
+			t.Fatalf("%s: tool returned error: %s", tc.tool, firstText(t, res))
+		}
+		if log.paths[0] != tc.path {
+			t.Errorf("%s: path = %q, want %q", tc.tool, log.paths[0], tc.path)
+		}
+		q := log.queries[0]
+		if q.Get(tc.param) != "gu" {
+			t.Errorf("%s: %s = %q, want gu (query %v)", tc.tool, tc.param, q.Get(tc.param), q)
+		}
+		if q.Has("lang") && q.Has("locale") {
+			t.Errorf("%s: both lang and locale sent (query %v)", tc.tool, q)
+		}
+		for k, v := range tc.want {
+			if q.Get(k) != v {
+				t.Errorf("%s: %s = %q, want %q (query %v)", tc.tool, k, q.Get(k), v, q)
+			}
+		}
+		// Without it nothing is sent: the API default (English, or the
+		// language configured on the API key) applies.
+		session, log = newTestServer(t, 200, `{}`)
+		if res := callTool(t, session, tc.tool, tc.args); res.IsError {
+			t.Fatalf("%s (no language): tool returned error: %s", tc.tool, firstText(t, res))
+		}
+		if q := log.queries[0]; q.Has("lang") || q.Has("locale") {
+			t.Errorf("%s: language sent although none was given (query %v)", tc.tool, q)
+		}
+	}
+}
+
+// A tool without a language input rejects one instead of ignoring it, and
+// the note about localized names is only on tools that take `locale`.
+func TestLanguageNotOnNumberOnlyTools(t *testing.T) {
+	t.Parallel()
+	session, log := newTestServer(t, 200, `{}`)
+	res, err := session.CallTool(t.Context(), &mcp.CallToolParams{
+		Name:      "panchang_rahu_kaal",
+		Arguments: map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "date": "2026-11-13", "locale": "gu"},
+	})
+	if err == nil && !res.IsError {
+		t.Errorf("panchang_rahu_kaal accepted a locale it does not have (query %v)", log.queries)
+	}
+	out, err := session.ListTools(t.Context(), &mcp.ListToolsParams{})
+	if err != nil {
+		t.Fatalf("list tools: %v", err)
+	}
+	for _, tl := range out.Tools {
+		if noLanguageTools[tl.Name] && strings.Contains(tl.Description, strings.TrimSpace(localizedNote)) {
+			t.Errorf("%s: description promises localized names", tl.Name)
 		}
 	}
 }

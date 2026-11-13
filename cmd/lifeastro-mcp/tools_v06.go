@@ -135,7 +135,7 @@ func registerAshtakavargaSarva(s *mcp.Server, c *apiClient) {
 }
 
 func registerAshtakavargaKaksha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "ashtakavarga_kaksha",
 		Description: "Get Kaksha (sub-division) level Ashtakavarga analysis — divides each sign into 8 equal 3°45′ segments, each ruled by a graha. Used for precise transit timing within a sign. Use for 'kaksha ashtakavarga', 'which kaksha is Saturn transiting', 'precise transit timing'.",
 		Title:       "Ashtakavarga Kaksha",
@@ -150,7 +150,7 @@ type AshtakavargaTransitScoreInput struct {
 }
 
 func registerAshtakavargaTransitScore(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "ashtakavarga_transit_score",
 		Description: "Score current (or a given date's) planetary transits against a natal chart using Ashtakavarga benefic points. Returns a score per transiting planet indicating how favourable the transit is for that natal chart. Use for 'how good is Saturn's transit for me now', 'ashtakavarga transit score today'.",
 		Title:       "Ashtakavarga Transit Score",
@@ -169,7 +169,7 @@ type CalendarYearInput struct {
 }
 
 func registerCalendarAdhikMaas(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "calendar_adhik_maas",
 		Description: "Find the Adhik Maas (intercalary/leap month) in a given year — the extra lunar month inserted to sync the Hindu lunar calendar with the solar year. Returns the month name, start date, and end date. Adhik Maas occurs roughly every 2.5–3 years. Use for 'is there adhik maas in 2026', 'leap month this year', 'mal maas dates'.",
 		Title:       "Adhik Maas (Leap Month)",
@@ -199,7 +199,7 @@ func (c CalendarDateInput) toQuery() url.Values {
 }
 
 func registerCalendarMonth(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "calendar_month",
 		Description: "Get the Hindu lunar-calendar details for a Gregorian date — the Hindu month (Chaitra, Vaishakha, …) in both Amanta and Purnimanta reckoning, paksha (Shukla/Krishna), tithi number within the month, adhik/kshaya flags, Vikram and Shaka Samvat years, ritu and ayana. One date per call; defaults to today. Use for 'what is the Hindu date today', 'which Hindu month is it', 'Vikram Samvat year now'.",
 		Title:       "Hindu Calendar Month",
@@ -209,7 +209,7 @@ func registerCalendarMonth(s *mcp.Server, c *apiClient) {
 }
 
 func registerCalendarRitu(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "calendar_ritu",
 		Description: "Get the current Hindu Ritu (season) for a date — one of 6 seasons: Vasanta (spring), Grishma (summer), Varsha (monsoon), Sharad (autumn), Hemanta (pre-winter), Shishira (winter). Each Ritu spans 2 solar months. Use for 'what ritu is it now', 'which season in Hindu calendar', 'ritu for June'.",
 		Title:       "Hindu Ritu (Season)",
@@ -219,7 +219,7 @@ func registerCalendarRitu(s *mcp.Server, c *apiClient) {
 }
 
 func registerCalendarSamvatsara(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "calendar_samvatsara",
 		Description: "Get the Samvatsara (Jupiter-cycle year name) in effect on a date — the 60-year cycle used in Hindu astrology (Prabhava, Vibhava, Shukla, … Akshaya), with the Vikram and Shaka Samvat years. Defaults to today. Use for 'what samvatsara is it', 'Hindu year name', 'Vikram Samvat year'.",
 		Title:       "Samvatsara (Hindu Year Name)",
@@ -236,7 +236,7 @@ type CalendarSolsticesInput struct {
 }
 
 func registerCalendarSolstices(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "calendar_solstices",
 		Description: "Get the equinoxes and solstices of a year — the exact moment (UTC and local) the tropical Sun reaches 0°, 90°, 180°, 270°, which ayana begins (tropical Dakshinayana at the June solstice, tropical Uttarayana at the December solstice — the panchang's sidereal Uttarayana is Makara Sankranti ~24 days later), and with lat/lon the sunrise, sunset and day length at that place. Use for 'when is the winter solstice', 'longest day of 2027 in Delhi', 'when does Uttarayana start'.",
 		Title:       "Equinoxes & Solstices",
@@ -269,7 +269,7 @@ func registerChartBhavabala(s *mcp.Server, c *apiClient) {
 }
 
 func registerChartCombustion(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_combustion",
 		Description: "Check which planets are combust (too close to the Sun) in a birth chart — returns each planet's angular distance from Sun, whether it is combust by classical limits, and combust severity. Use for 'is my Mercury combust', 'combust planets in my chart', 'asta graha'.",
 		Title:       "Combust Planets",
@@ -279,7 +279,7 @@ func registerChartCombustion(s *mcp.Server, c *apiClient) {
 }
 
 func registerChartGrahaYuddha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_graha_yuddha",
 		Description: "Identify Graha Yuddha (planetary war) in a birth chart — occurs when two visible planets are within 1° of each other. Returns the warring pair, winner (the planet with higher ecliptic latitude), loser, and degrees of separation. Use for 'graha yuddha in my chart', 'planetary war', 'which planets are in war'.",
 		Title:       "Graha Yuddha (Planetary War)",
@@ -289,7 +289,7 @@ func registerChartGrahaYuddha(s *mcp.Server, c *apiClient) {
 }
 
 func registerChartHouseOccupants(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_house_occupants",
 		Description: "List all planets occupying each of the 12 houses in a birth chart — a house-indexed view of the chart (vs planet-indexed from chart_planets). Use for 'what planets are in my 5th house', 'house occupants', 'planets in each bhava'.",
 		Title:       "House Occupants",
@@ -304,7 +304,7 @@ type KPInput struct {
 }
 
 func registerChartKPHouseSignificator(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_kp_house_significator",
 		Description: "Get KP (Krishnamurti Paddhati) house significators for a given cusp — lists planets that significate the house through occupancy, lordship, and sub-lord chain. Used in KP astrology for event timing and prediction. Use for 'KP significators for 7th house', 'KP house analysis', 'krishnamurti paddhati'.",
 		Title:       "KP House Significator",
@@ -321,7 +321,7 @@ type KPSublordInput struct {
 }
 
 func registerChartKPSublord(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_kp_sublord",
 		Description: "Get the KP sublord of a planet — the sub-lord of the nakshatra sub-division the planet occupies (KP star lord → sub lord → sub-sub lord chain). Central to KP timing. Use for 'KP sublord of Moon', 'star lord and sub lord', 'KP planet analysis'.",
 		Title:       "KP Sublord",
@@ -337,7 +337,7 @@ func registerChartKPSublord(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerDashaYoginiFull(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_yogini_full",
 		Description: "Get the full Yogini Dasha sequence for a birth chart — all 8 Yogini lords (Mangala, Pingala, Dhanya, Bhramari, Bhadrika, Ulka, Siddha, Sankata) with start/end dates across 36 years. Use for 'full yogini dasha timeline', 'all yogini periods', 'yogini dasha from birth'.",
 		Title:       "Yogini Dasha Full Timeline",
@@ -355,14 +355,14 @@ type FestivalsOnDateInput struct {
 	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude in decimal degrees — vrat dates depend on local sunrise/moonrise; defaults to New Delhi"`
 	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude in decimal degrees; defaults to New Delhi"`
 	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone for the civil date (e.g. Asia/Kolkata); defaults to Asia/Kolkata"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"language of names: en (default), hi, mr, ta, kn, bn, gu, pa"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming"`
 }
 
 func registerFestivalsOnDate(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "festivals_on_date",
-		Description: "List everything observed on a specific date at a location — festivals, vrats, Ekadashi (smarta/Vaishnava), Pradosh, Purnima, Amavasya, Sankranti, jayantis, eclipses — each with the windows a panchang prints (moonrise for Karwa Chauth/Sankashti, pradosh kaal, Ekadashi parana). Use for 'what festival is today', 'which vrat is on 15 July 2026', 'is there any festival tomorrow in Toronto'.",
+		Description: "List everything observed on a specific date at a location — festivals, vrats, Ekadashi (smarta/Vaishnava), Pradosh, Purnima, Amavasya, Sankranti, jayantis, eclipses — each with the windows a panchang prints (moonrise for Karwa Chauth/Sankashti, pradosh kaal, Ekadashi parana). Use for 'what festival is today', 'which vrat is on 15 July 2026', 'is there any festival tomorrow in Toronto'. Names come back in the `locale` language.",
 		Title:       "Festivals on a Specific Date",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsOnDateInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
@@ -390,14 +390,14 @@ type FestivalsVratInput struct {
 	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude (dates depend on local sunrise/moonrise); defaults to New Delhi"`
 	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude; defaults to New Delhi"`
 	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone; defaults to Asia/Kolkata"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"en (default), hi, mr, ta, kn, bn, gu, pa"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta'"`
 }
 
 func registerFestivalsVrat(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "festivals_vrat",
-		Description: "Year-wise Vrat & Upavas lists — every Ekadashi of the year (smarta + Vaishnava/Gauna, with parana windows), every Pradosh (named by weekday), Sankashti/Vinayaka Chaturthi, Purnima, Amavasya, Chandra Darshana, Masik Shivaratri, Durgashtami, Kalashtami, Skanda Shashthi, Masik Karthigai, Shraddha dates (all 16 Pitru Paksha tithis), Janmashtami (Smarta and ISKCON), Sankranti, Satyanarayana Puja or eclipses — at a location. Use for 'all Ekadashi dates in 2027', 'pradosh vrat list this year in London', 'shraddha dates 2027'.",
+		Description: "Year-wise Vrat & Upavas lists — every Ekadashi of the year (smarta + Vaishnava/Gauna, with parana windows), every Pradosh (named by weekday), Sankashti/Vinayaka Chaturthi, Purnima, Amavasya, Chandra Darshana, Masik Shivaratri, Durgashtami, Kalashtami, Skanda Shashthi, Masik Karthigai, Shraddha dates (all 16 Pitru Paksha tithis), Janmashtami (Smarta and ISKCON), Sankranti, Satyanarayana Puja or eclipses — at a location. Use for 'all Ekadashi dates in 2027', 'pradosh vrat list this year in London', 'shraddha dates 2027'. Names come back in the `locale` language.",
 		Title:       "Vrat & Upavas Dates (Year)",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in FestivalsVratInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
@@ -471,7 +471,7 @@ func registerGeoTimezone(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerMilanDashaSync(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_dasha_sync",
 		Description: "Get the Vimshottari Mahadasha each partner is running now, when each ends and whether the two overlap. With timeline=true it adds both partners' Mahadasha/Antardasha periods on one aligned timeline (from, years: default 10, max 30); with marriage_windows=true each span is tagged favourable, neutral or avoid for marriage with reason ids (7th lord, Venus or Jupiter Antardasha favourable; Rahu/Ketu or 6th/8th/12th lord avoid). Each partner's dates match dasha_vimshottari_full. Data, not a muhurta. Use for 'dasha compatibility', 'when is a good period for our marriage', 'dasha sync for marriage'.",
 		Title:       "Milan Dasha Sync",
@@ -481,7 +481,7 @@ func registerMilanDashaSync(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanDhanYog(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_dhan_yog",
 		Description: "Check Dhan Yog (wealth yoga) for a single person's chart — assesses 2nd/11th house lord strength and Jupiter placement for prosperity. Use for 'dhan yog in my chart', 'wealth yoga', 'financial yoga analysis'.",
 		Title:       "Milan Dhan Yog",
@@ -491,7 +491,7 @@ func registerMilanDhanYog(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanLongevity(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_longevity",
 		Description: "Assess longevity for a single person's chart — classical analysis of lagna, 8th house, and Moon sign longevity indicators. Use for 'longevity in my chart', 'ayush analysis', 'lifespan indicators'.",
 		Title:       "Milan Longevity",
@@ -501,7 +501,7 @@ func registerMilanLongevity(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanMahendra(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_mahendra",
 		Description: "Check Mahendra Koota — the 4th additional compatibility factor beyond Ashtakoota. Counts from bride's nakshatra to groom's in multiples of 4, 13, 22 etc. A positive result indicates the groom will protect and provide for the bride. Use for 'mahendra koota', 'mahendra compatibility'.",
 		Title:       "Milan Mahendra Koota",
@@ -511,7 +511,7 @@ func registerMilanMahendra(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanNavamsaCompat(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_navamsa_compat",
 		Description: "Check Navamsa compatibility — compares the D9 (Navamsa) chart placements of both partners for deeper marriage harmony beyond the D1 chart. Assesses 7th house navamsa lord synergy and mutual aspect in the navamsa. Use for 'navamsa compatibility', 'D9 chart matching', 'deeper marriage compatibility'.",
 		Title:       "Milan Navamsa Compatibility",
@@ -521,7 +521,7 @@ func registerMilanNavamsaCompat(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanSantanYog(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_santan_yog",
 		Description: "Check Santan Yog for a single person's chart — assesses 5th house lord and Jupiter placement to indicate prospects for children. Use for 'santan yog in my chart', 'children prospects', 'progeny yoga'.",
 		Title:       "Milan Santan Yog (Progeny)",
@@ -531,7 +531,7 @@ func registerMilanSantanYog(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanShaniDosha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_shani_dosha",
 		Description: "Check Shani Dosha for a single person's chart — Saturn in 1st, 4th, 7th, 10th, or 12th house from lagna. Returns dosha presence, which house, and cancellation rules. Use for 'do I have shani dosha', 'Saturn affliction in my chart', 'is my shani dosha cancelled'.",
 		Title:       "Milan Shani Dosha",
@@ -541,7 +541,7 @@ func registerMilanShaniDosha(s *mcp.Server, c *apiClient) {
 }
 
 func registerMilanStreeDirgha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_stree_dirgha",
 		Description: "Check Stree Dirgha — the distance from bride's nakshatra to groom's must be more than 9 nakshatras for a beneficial match (indicates the groom will lead a longer, more prosperous life than the bride expected). Use for 'stree dirgha', 'nakshatra distance check', 'bride groom nakshatra compatibility'.",
 		Title:       "Milan Stree Dirgha",
@@ -581,7 +581,7 @@ func registerMuhurtaChandraBala(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaGrahaPravesh(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_graha_pravesh",
 		Description: "Score how auspicious a specific date (and optional time) is for a housewarming (griha pravesh) at a location — returns a 0-100 score, a grade, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time. Use for 'is this date good for griha pravesh', 'housewarming muhurta check'.",
 		Title:       "Griha Pravesh Muhurta",
@@ -591,7 +591,7 @@ func registerMuhurtaGrahaPravesh(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaPanchakaRahita(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_panchaka_rahita",
 		Description: "Check whether a specific date (and optional time) is free of Panchaka dosha (panchaka rahita) — the classical test applied before any important undertaking. Evaluates ONE date per call. Use for 'is this time panchaka rahita', 'panchaka check for a muhurta'.",
 		Title:       "Panchaka Rahita (Panchaka-Free Windows)",
@@ -601,7 +601,7 @@ func registerMuhurtaPanchakaRahita(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaSarvarthaSiddhi(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_sarvartha_siddhi",
 		Description: "Check whether Sarvartha Siddhi Yoga (the weekday-nakshatra combination considered auspicious for all purposes) is present on a specific date. Evaluates ONE date per call. Use for 'is there sarvartha siddhi yoga on this date', 'all-purpose auspicious day check'.",
 		Title:       "Sarvartha Siddhi Yoga",
@@ -611,7 +611,7 @@ func registerMuhurtaSarvarthaSiddhi(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaShubhaYoga(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_shubha_yoga",
 		Description: "List the auspicious yogas (Amrit Siddhi, Ravi Pushya, Guru Pushya, Dwipushkar, Tripushkar and similar) present on a specific date. Evaluates ONE date per call. Use for 'any shubha yoga on this date', 'is today Guru Pushya'.",
 		Title:       "Shubha Yoga Windows",
@@ -647,7 +647,7 @@ func registerMuhurtaTaraBala(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaVyapar(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_vyapar",
 		Description: "Score how auspicious a specific date (and optional time) is for starting a business or opening a shop (vyapar) at a location — returns a 0-100 score, a grade, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time. Use for 'is this date good to open my shop', 'business start muhurta check'.",
 		Title:       "Vyapar (Business) Muhurta",
@@ -657,7 +657,7 @@ func registerMuhurtaVyapar(s *mcp.Server, c *apiClient) {
 }
 
 func registerMuhurtaYatra(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_yatra",
 		Description: "Score how auspicious a specific date (and optional time) is for starting a journey (yatra) from a location — returns a 0-100 score, a grade, and the factor breakdown including disha shool. Evaluates ONE date per call. Use for 'is this a good day to travel', 'yatra muhurta check'.",
 		Title:       "Yatra (Travel) Muhurta",
@@ -672,12 +672,12 @@ func registerMuhurtaYatra(s *mcp.Server, c *apiClient) {
 
 type NumerologyNameInput struct {
 	Name string `json:"name" jsonschema:"full name as written on official documents"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 type NumerologyDobInput struct {
 	Dob  string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD format"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func numerologyNameQuery(in NumerologyNameInput) url.Values {
@@ -753,7 +753,7 @@ func registerNumerologyDestiny(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerPanchangHoraDinman(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_hora_dinman",
 		Description: "Get the Dinman (day length) and Ratriман (night length) for a date — the exact duration of daytime from sunrise to sunset and nighttime from sunset to next sunrise, in ghatis (1 ghati = 24 minutes). Used in muhurta calculations. Use for 'day length today', 'dinman ratriман', 'how long is the day', 'ghati duration'.",
 		Title:       "Hora Dinman (Day/Night Duration)",
@@ -763,7 +763,7 @@ func registerPanchangHoraDinman(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangSankranti(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_sankranti",
 		Description: "Find the next solar Sankranti (the Sun's entry into a sidereal sign) on or after a date — returns the sign entered, the exact local and UTC moment, and flags for Makar Sankranti and Mesha Sankranti (solar new year). Defaults to today; call again with a later date to walk through the year. Use for 'when is Makar Sankranti', 'next sankranti', 'when does the Sun enter Scorpio'.",
 		Title:       "Sankranti (Solar Ingress) Calendar",
@@ -783,7 +783,7 @@ type PlanetDateInput struct {
 }
 
 func registerPlanetCombustionWindow(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "planet_combustion_window",
 		Description: "Find the next combustion window of a planet on or after a date — when the planet is too close to the Sun (within classical combust limits) and loses strength. Defaults to searching from today. Use for 'when is Mercury combust next', 'combustion dates for Venus', 'when does Mars come out of combustion'.",
 		Title:       "Planet Combustion Window",
@@ -793,7 +793,7 @@ func registerPlanetCombustionWindow(s *mcp.Server, c *apiClient) {
 }
 
 func registerPlanetSpeed(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "planet_speed",
 		Description: "Get the current speed and motion state of a planet — degrees per day, whether it is direct/retrograde/stationary, and its speed relative to mean motion. Use for 'how fast is Jupiter moving', 'is Saturn stationary', 'planet speed today', 'graha gati'.",
 		Title:       "Planet Speed & Motion",
@@ -812,7 +812,7 @@ func registerPlanetSpeed(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerPrashnaArudha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "prashna_arudha",
 		Description: "Compute the Arudha Lagna of a Prashna chart — the perceived image/manifestation of the question's subject. Used in KP and Jaimini Prashna for nuanced prediction beyond the basic yes/no. Use for 'prashna arudha lagna', 'horary chart arudha', 'prashna image lagna'.",
 		Title:       "Prashna Arudha Lagna",
@@ -822,7 +822,7 @@ func registerPrashnaArudha(s *mcp.Server, c *apiClient) {
 }
 
 func registerPrashnaChart(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "prashna_chart",
 		Description: "Cast the full Prashna (horary) chart for the moment a question is asked — returns lagna, all planet placements, houses, and panchang at the moment of the question. Use when you need the complete chart data for detailed horary analysis, not just the yes/no answer. Use for 'prashna kundli', 'horary chart', 'prashna chart details'.",
 		Title:       "Prashna Chart",
@@ -832,7 +832,7 @@ func registerPrashnaChart(s *mcp.Server, c *apiClient) {
 }
 
 func registerPrashnaLagnaLord(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "prashna_lagna_lord",
 		Description: "Get the lagna lord analysis for a Prashna chart — where the lagna lord is placed, its strength, and what it indicates about the querent's situation and chances of success. Use for 'prashna lagna lord', 'horary lagna lord analysis', 'prashna ascendant lord'.",
 		Title:       "Prashna Lagna Lord",
@@ -842,7 +842,7 @@ func registerPrashnaLagnaLord(s *mcp.Server, c *apiClient) {
 }
 
 func registerPrashnaSignificators(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "prashna_significators",
 		Description: "Get the KP significators for a Prashna chart — lists planets significating the houses relevant to the question (e.g. houses 2, 6, 10, 11 for job questions). Used for KP horary timing and prediction. Use for 'prashna significators', 'KP horary significators', 'which planets significate my question'.",
 		Title:       "Prashna KP Significators",
@@ -858,7 +858,7 @@ func registerPrashnaSignificators(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerTransitAshtakavarga(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "transit_ashtakavarga",
 		Description: "Score current planetary transits against a natal chart using Ashtakavarga — shows which houses transiting planets are moving through and how many benefic points those signs have in the natal chart. High-point transits are favourable; low-point are challenging. Use for 'ashtakavarga transit today', 'is this transit good for me', 'transit ashtakavarga score'.",
 		Title:       "Transit Ashtakavarga",
@@ -868,7 +868,7 @@ func registerTransitAshtakavarga(s *mcp.Server, c *apiClient) {
 }
 
 func registerTransitDoubleTransit(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "transit_double_transit",
 		Description: "Compute Double Transit (Jupiter-Saturn-Rahu joint transit) analysis — the classical technique where an event manifests only when Jupiter AND Saturn both transit houses connected to a natal significator simultaneously. Used for timing major life events (marriage, career change, relocation). Use for 'double transit analysis', 'Jupiter Saturn transit together', 'when will I get married by double transit'.",
 		Title:       "Double Transit Analysis",
@@ -903,7 +903,7 @@ func registerTransitSmallPanotiHistory(s *mcp.Server, c *apiClient) {
 }
 
 func registerTransitTarabala(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "transit_tarabala",
 		Description: "Compute Tara Bala for today's transiting Moon relative to a natal chart — rates the day as Janma/Sampat/Vipat/Kshema/Pratyak/Sadhana/Vadha/Mitra/Param-Mitra tara. Used to personalize daily muhurta. Use for 'tara bala today for my chart', 'is today's Moon good for me', 'tarabala transit'.",
 		Title:       "Transit Tara Bala",
@@ -913,7 +913,7 @@ func registerTransitTarabala(s *mcp.Server, c *apiClient) {
 }
 
 func registerTransitVedha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "transit_vedha",
 		Description: "Check Vedha (transit obstruction) for a natal chart — certain house transits are blocked (vedha'd) by another planet transiting a specific opposing house simultaneously. Returns which transits are obstructed by Vedha right now. Use for 'vedha today', 'transit obstruction', 'which planet transit is blocked by vedha'.",
 		Title:       "Transit Vedha (Obstruction)",
@@ -927,7 +927,7 @@ func registerTransitVedha(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerVarshaphalLord(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "varshaphal_lord",
 		Description: "Get the Varsha Lord (Varshesha, year ruler) for an annual chart, chosen by the Tajika Panchadhikari rule from the five office-bearers (Munthesh, Janmesh, Varsha Lagnesh, Trirashipati, Dina/Ratripati); the response also lists the candidates and the hora lord of the return. The Varsha Lord strongly influences the themes of the solar-return year. Use for 'varsha lord 2026', 'year ruler annual chart', 'who rules my varshaphal year'.",
 		Title:       "Varshaphal Lord (Year Ruler)",
@@ -963,7 +963,7 @@ func registerVarshaphalSolarReturnJD(s *mcp.Server, c *apiClient) {
 }
 
 func registerVarshaphalYoga(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "varshaphal_yoga",
 		Description: "Get Tajika Yogas in the Varshaphal annual chart — Ikkaval, Induvara, Ithasala, Ishrafa, Nakta, Yamaya, Manau, Khallasara, Duphali-Kuttha, and other Tajika aspect-based yogas that indicate the tone of the solar-return year. Use for 'varshaphal yogas 2026', 'tajika yogas annual chart', 'annual chart yoga analysis'.",
 		Title:       "Varshaphal Yogas (Tajika)",

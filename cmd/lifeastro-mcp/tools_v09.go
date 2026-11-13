@@ -67,7 +67,7 @@ func registerPanchangMoonriseMoonset(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangNakshatra(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_nakshatra",
 		Description: "Get the Moon's nakshatra (lunar mansion) for a date and location — returns the current nakshatra name, pada, ruling planet, start/end timestamps, and the next nakshatra. Use for 'what nakshatra is today', 'which nakshatra is the Moon in', 'today's chandra nakshatra'.",
 		Title:       "Daily Nakshatra",
@@ -77,7 +77,7 @@ func registerPanchangNakshatra(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangYoga(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_yoga",
 		Description: "Get the panchang yoga for a date — one of the 27 yogas (Vishkumbha through Vaidhriti) determined by the combined longitude of Sun and Moon. Some yogas are auspicious (Siddha, Shubha, Amrita) and others inauspicious (Vishkumbha, Atiganda, Vyaghata). Use for 'what panchang yoga is today', 'is today's yoga auspicious', 'which of the 27 yogas is active'.",
 		Title:       "Panchang Yoga",
@@ -87,7 +87,7 @@ func registerPanchangYoga(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangKarana(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_karana",
 		Description: "Get the panchang karana for a date and location — one of the 11 karanas (half-tithis): Bava, Balava, Kaulava, Taitila, Gara, Vanija, Vishti (Bhadra), Shakuni, Chatushpada, Naga, Kimstughna. Vishti/Bhadra karana is inauspicious for starting activities. Use for 'what karana is today', 'is this Bhadra', 'karana for this tithi'.",
 		Title:       "Panchang Karana",
@@ -97,7 +97,7 @@ func registerPanchangKarana(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangVara(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_vara",
 		Description: "Get the Hindu vara (weekday) details for a date — returns the vara name (Ravivara/Somavara/…), its ruling planet, the vara's general auspiciousness for different activities, and the vara lord's strength. Use for 'what vara is today', 'which planet rules Wednesday', 'is today's vara good for travel'.",
 		Title:       "Panchang Vara (Weekday)",
@@ -157,7 +157,7 @@ func registerPanchangDurmuhurta(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangHinduMonth(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_hindu_month",
 		Description: "Get the current Hindu lunar month details for a date — returns Purnimanta and Amanta month name (Chaitra/Vaishakha/…), paksha (Shukla/Krishna), Vikram Samvat, Shaka Samvat, and whether it is an Adhik (intercalary) month. Use for 'what Hindu month is today', 'which Shukla paksha day is it', 'current Vikram Samvat date'.",
 		Title:       "Hindu Month Details",
@@ -167,7 +167,7 @@ func registerPanchangHinduMonth(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangPanchaka(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_panchaka",
 		Description: "Check if the current time is in Panchaka — the inauspicious period when the Moon transits Aquarius or Pisces (creates obstacles for travel, construction, funerals, and starting new activities). Returns whether Panchaka is active, which of the 5 types it is (Roga/Mrityu/Agni/Raja/Chora), and the end time. Use for 'is it Panchaka right now', 'panchaka today', 'should I avoid this activity due to panchaka'.",
 		Title:       "Panchaka Status",
@@ -177,7 +177,7 @@ func registerPanchangPanchaka(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangVarjyam(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_varjyam",
 		Description: "Get the Varjyam window for a date and location — a daily inauspicious 1h36m period within a nakshatra determined by the Moon's position; all activities including travel, medical procedures, and ceremonies are avoided. Returns start/end timestamps. Use for 'when is Varjyam today', 'varjyam window to avoid', 'inauspicious nakshatra period today'.",
 		Title:       "Varjyam Window",
@@ -187,7 +187,7 @@ func registerPanchangVarjyam(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangAmritKalam(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_amrit_kalam",
 		Description: "Get the Amrit Kalam window for a date and location — an auspicious 1h36m period within the current nakshatra, considered especially beneficial for starting important activities and medical treatments. The counterpart to Varjyam within the same nakshatra. Returns start/end timestamps. Use for 'when is Amrit Kalam today', 'amrit kaal timing', 'best nakshatra window today'.",
 		Title:       "Amrit Kalam Window",
@@ -197,7 +197,7 @@ func registerPanchangAmritKalam(s *mcp.Server, c *apiClient) {
 }
 
 func registerPanchangSiddhaYoga(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_siddha_yoga",
 		Description: "Check if the current date has Siddha Yoga — an auspicious panchang yoga formed by specific vara+nakshatra combinations (e.g. Sunday+Hasta, Monday+Mrigashira, Saturday+Rohini, etc.). Siddha Yoga is highly auspicious for starting new ventures and ceremonies. Returns whether it is active and which vara-nakshatra pair created it. Use for 'is today Siddha Yoga', 'Siddha Yoga dates this month', 'best yoga for beginning something'.",
 		Title:       "Siddha Yoga Check",
@@ -211,7 +211,7 @@ func registerPanchangSiddhaYoga(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartGhatak(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_ghatak",
 		Description: "Get the Ghatak Chakra (inauspicious indicators) for a birth chart — identifies the inauspicious weekday, tithi, nakshatra, lagna, and month specific to this chart's Moon sign. These are the conditions most harmful to the native and should be avoided for muhurta. Use for 'what is my ghatak nakshatra', 'ghatak chakra for my chart', 'which day is inauspicious for my rashi'.",
 		Title:       "Ghatak Chakra",

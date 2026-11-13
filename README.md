@@ -188,6 +188,16 @@ The data tools (`chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sens
 - Tools that need a birth chart **and** a moment to evaluate (transits to a chart, Sade Sati, tara bala, personalised horoscopes) take the birth data as `date`/`time`/`tz` and the moment as the optional `on_date`.
 - The per-purpose muhurta tools (`muhurta_vivah`, `muhurta_graha_pravesh`, …) score **one date** per call. To search a range for the best dates, use `muhurta_best_time`.
 
+### Languages
+
+The Vedic tools answer in the language you ask for: **English (default), Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam and Gujarati**. Names (planets, signs, nakshatras, tithis, festivals), labels, notes and the interpretation text all come back in that language. Bengali and Punjabi return names and terms in the language; longer text is still English.
+
+- 188 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
+- 25 Vedic tools have no language input because their answer is only numbers, times and ids (for example `panchang_rahu_kaal`, `panchang_sunrise_sunset`, `ashtakavarga_sarva`, `transit_windows`, `chart_yogas`).
+- Ids stay in English in every language (`sun` … `ketu`, rule ids, `sign_index`, classical source citations), so code that reads them does not change.
+- Western astrology, Tarot, geo and catalog tools are English. The seven `western_narrative_*` tools also answer in Hindi and Marathi (`lang`: `hi`, `mr`).
+- Leave the language out and the API default applies: English, or the language configured for your API key.
+
 ## Troubleshooting
 
 **The tools don't appear in Claude Desktop.**
@@ -222,17 +232,20 @@ make fmt vet
 make build
 
 # Cross-compile for all release platforms
-make build-all VERSION=0.11.0
+make build-all VERSION=0.12.0
 
 # Call every tool against the real API (needs a key; spends credits).
 # Reports cost 500-8000 credits each, so they are skipped unless asked for.
 LIFEASTRO_API_KEY=dv_live_... make live
 LIFEASTRO_API_KEY=dv_live_... make live LIVE_SKIP=        # include reports
+# Also pass a language to every tool that takes one and list the tools
+# that answered without text in it.
+LIFEASTRO_API_KEY=dv_live_... LIFEASTRO_LIVE_LOCALE=gu make live
 ```
 
 ## Roadmap
 
-- **v0.11 (current):** Local stdio MCP server, 320 tools, every tool verified against the live API (`make live`)
+- **v0.12 (current):** Local stdio MCP server, 320 tools, 188 of them answer in 8 languages, every tool verified against the live API (`make live`)
 - **v1.0 (planned):** Stable tool surface; semantic versioning kicks in
 - **Remote HTTP MCP (separate project):** Hosted MCP endpoint at `mcp.lifeastroapi.com` for ChatGPT and web/mobile MCP clients — tracked separately from this repo
 

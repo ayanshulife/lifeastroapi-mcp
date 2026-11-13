@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Image version (e.g. 0.11.0)"
+        description: "Image version (e.g. 0.12.0)"
         required: true
 
 permissions:

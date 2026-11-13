@@ -111,7 +111,7 @@ func registerV07Tools(s *mcp.Server, c *apiClient) {
 
 type NarrativeBirthInput struct {
 	BirthInput
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NarrativeBirthInput) toQuery() url.Values {
@@ -135,7 +135,7 @@ func (n NarrativeBirthInput) toDualQuery() url.Values {
 type NarrativePlanetInput struct {
 	BirthInput
 	Planet string `json:"planet" jsonschema:"planet name: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu"`
-	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NarrativePlanetInput) toQuery() url.Values {
@@ -150,7 +150,7 @@ func (n NarrativePlanetInput) toQuery() url.Values {
 type NarrativeHouseInput struct {
 	BirthInput
 	House int    `json:"house" jsonschema:"house number 1–12"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NarrativeHouseInput) toQuery() url.Values {
@@ -190,7 +190,7 @@ type NarrativeDashaTreeInput struct {
 	BirthInput
 	Maha  string `json:"maha" jsonschema:"Mahadasha lord (e.g. Saturn, Jupiter, Rahu)"`
 	Antar string `json:"antar,omitempty" jsonschema:"optional Antardasha lord; if omitted returns all antardashas for the given Mahadasha"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeDashaTreePhal(s *mcp.Server, c *apiClient) {
@@ -241,7 +241,7 @@ func registerNarrativeFinanceOutlook(s *mcp.Server, c *apiClient) {
 type NarrativeHoroscopeInput struct {
 	BirthInput
 	OnDate string `json:"on_date,omitempty" jsonschema:"optional date the horoscope is for, YYYY-MM-DD; defaults to today"`
-	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (n NarrativeHoroscopeInput) toQuery() url.Values {
@@ -278,17 +278,21 @@ func registerNarrativeHoroscopeDailyByMoon(s *mcp.Server, c *apiClient) {
 type NarrativeTamilHoroscopeInput struct {
 	BirthInput
 	OnDate string `json:"on_date,omitempty" jsonschema:"optional date the horoscope is for, YYYY-MM-DD; defaults to today"`
+	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeHoroscopeDailyTamil(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "narrative_horoscope_daily_tamil",
-		Description: "Get a daily horoscope in Tamil astrology style — uses the Tamil rashi system and traditional Tamil Panchangam for the day's reading. Use for 'Tamil horoscope today', 'தினசரி ராசிபலன்', 'Tamil rasi palan'.",
+		Description: "Get a daily horoscope in Tamil astrology style — uses the Tamil rashi system and traditional Tamil Panchangam for the day's reading. The text is English unless lang is set: pass lang \"ta\" for Tamil text. Use for 'Tamil horoscope today', 'தினசரி ராசிபலன்', 'Tamil rasi palan'.",
 		Title:       "Daily Tamil Horoscope",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in NarrativeTamilHoroscopeInput) (*mcp.CallToolResult, any, error) {
 		q := in.BirthInput.toQuery()
 		if in.OnDate != "" {
 			q.Set("transit_date", in.OnDate)
+		}
+		if in.Lang != "" {
+			q.Set("lang", in.Lang)
 		}
 		return callPassthrough(ctx, c, "/v1/vedic/narrative/horoscope/daily-tamil", q)
 	})
@@ -367,7 +371,7 @@ func registerNarrativeMarriageOutlook(s *mcp.Server, c *apiClient) {
 type NarrativeMilanInput struct {
 	BrideBirth BirthInput `json:"bride"`
 	GroomBirth BirthInput `json:"groom"`
-	Lang       string     `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang       string     `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeMilan(s *mcp.Server, c *apiClient) {
@@ -400,7 +404,7 @@ type NarrativePrashnaInput struct {
 	PrashnaInput
 	Topic         string `json:"topic,omitempty" jsonschema:"optional subject of the question: career, financial, health, litigation, marriage, missing_person, property or travel"`
 	QuestionHouse int    `json:"question_house,omitempty" jsonschema:"optional house (1-12) of the question, used when topic is not given: 2 money, 4 property, 6 illness/disputes, 7 marriage, 9 long travel, 10 career, ..."`
-	Lang          string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang          string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativePrashna(s *mcp.Server, c *apiClient) {
@@ -565,7 +569,7 @@ func registerNarrativeTransitPhal(s *mcp.Server, c *apiClient) {
 type NarrativeVarshaphalInput struct {
 	BirthInput
 	Year int    `json:"year,omitempty" jsonschema:"optional Gregorian year of the solar return to read, e.g. 2027; defaults to the current year"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeVarshaphalThemes(s *mcp.Server, c *apiClient) {
@@ -601,7 +605,7 @@ type ReportBirthInput struct {
 	BirthInput
 	Name   string `json:"name,omitempty" jsonschema:"optional name of the person, shown on the report (defaults to 'Subject')"`
 	Place  string `json:"place,omitempty" jsonschema:"optional birth place name to show on the report instead of the coordinates (display only; the chart always uses lat/lon)"`
-	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang   string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 	Format string `json:"format,omitempty" jsonschema:"output format: json (default) or pdf"`
 }
 
@@ -635,7 +639,7 @@ func registerReportDashaAnalysis(s *mcp.Server, c *apiClient) {
 type ReportHoroscopeInput struct {
 	Rashi string `json:"rashi" jsonschema:"Moon sign / rashi: Aries, Taurus, ..., Pisces (case-insensitive)"`
 	Date  string `json:"date,omitempty" jsonschema:"optional date YYYY-MM-DD; defaults to today"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerReportHoroscopeDaily(s *mcp.Server, c *apiClient) {
@@ -660,7 +664,7 @@ type ReportHoroscopeMonthInput struct {
 	Rashi string `json:"rashi" jsonschema:"Moon sign / rashi: Aries, Taurus, ..., Pisces (case-insensitive)"`
 	Year  int    `json:"year" jsonschema:"year e.g. 2026"`
 	Month int    `json:"month" jsonschema:"month 1–12"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerReportHoroscopeMonthly(s *mcp.Server, c *apiClient) {
@@ -739,7 +743,7 @@ func registerReportMangalDosha(s *mcp.Server, c *apiClient) {
 
 type ReportMatchMakingInput struct {
 	AshtakootaInput
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerReportMatchMaking(s *mcp.Server, c *apiClient) {
@@ -759,7 +763,7 @@ func registerReportMatchMaking(s *mcp.Server, c *apiClient) {
 type ReportNumerologyInput struct {
 	Name string `json:"name" jsonschema:"full name as written on official documents"`
 	Dob  string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD format"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerReportNumerology(s *mcp.Server, c *apiClient) {
@@ -812,7 +816,7 @@ func registerReportVarshaphal(s *mcp.Server, c *apiClient) {
 type VedicRemediesInput struct {
 	BirthInput
 	Category string `json:"category,omitempty" jsonschema:"optional remedy category: mantra, gemstone, pooja, vrat, yantra, color, number; if omitted returns all categories"`
-	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerVedicRemedies(s *mcp.Server, c *apiClient) {
@@ -916,7 +920,7 @@ func registerWesternDignitiesReceptions(s *mcp.Server, c *apiClient) {
 // that take only a planet name (lord) and optional language — no birth chart.
 type WesternNarrativeLordInput struct {
 	Lord string `json:"lord" jsonschema:"Firdaria time-lord planet name: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
 }
 
 func registerWesternNarrativeFirdaria(s *mcp.Server, c *apiClient) {

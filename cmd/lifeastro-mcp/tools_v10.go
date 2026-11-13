@@ -48,7 +48,7 @@ func registerV10Tools(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerDashaCharFull(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_char_full",
 		Description: "Get the full Char Dasha (Jaimini sign-based dasha) schedule for a birth chart — every mahadasha sign period with start/end dates across the full cycle. Use for 'Char Dasha periods', 'Jaimini dasha timeline', 'sign dasha schedule'.",
 		Title:       "Char Dasha Full Schedule",
@@ -58,7 +58,7 @@ func registerDashaCharFull(s *mcp.Server, c *apiClient) {
 }
 
 func registerDashaCharMajor(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_char_major",
 		Description: "Get the Char Dasha (Jaimini) mahadasha-level periods only — one row per sign period with start/end dates. Lighter than dasha_char_full. Use for 'major Char Dasha periods', 'which sign mahadashas do I get and when'.",
 		Title:       "Char Dasha Major Periods",
@@ -68,7 +68,7 @@ func registerDashaCharMajor(s *mcp.Server, c *apiClient) {
 }
 
 func registerDashaCharCurrent(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_char_current",
 		Description: "Get the currently running Char Dasha (Jaimini) period stack for a birth chart — the active mahadasha sign and antardasha sign with their date windows. Use for 'which Char Dasha is running now', 'current Jaimini dasha'.",
 		Title:       "Current Char Dasha",
@@ -92,7 +92,7 @@ func (in CharDashaMDInput) toQuery() url.Values {
 }
 
 func registerDashaCharMD(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_char_antardashas",
 		Description: "Drill into one Char Dasha (Jaimini) mahadasha sign and list its antardasha sub-periods with dates. Use for 'antardashas inside my Leo Char Dasha', 'sub-periods of a Jaimini sign dasha'.",
 		Title:       "Char Dasha Antardashas",
@@ -117,7 +117,7 @@ func (in CharDashaMDADInput) toQuery() url.Values {
 }
 
 func registerDashaCharMDAD(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_char_pratyantardashas",
 		Description: "Drill into a specific Char Dasha (Jaimini) mahadasha + antardasha pair and list the next-level sub-periods with dates. Use for 'sub-sub-periods of Leo-Scorpio Char Dasha'.",
 		Title:       "Char Dasha Pratyantardashas",
@@ -131,7 +131,7 @@ func registerDashaCharMDAD(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerLalKitabChart(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "lalkitab_chart",
 		Description: "Get the Lal Kitab chart for a birth — planets mapped into Lal Kitab's fixed Aries-based houses, with per-planet house placements used by Lal Kitab remedies. Use for 'Lal Kitab kundli', 'Lal Kitab planet positions'.",
 		Title:       "Lal Kitab Chart",
@@ -141,7 +141,7 @@ func registerLalKitabChart(s *mcp.Server, c *apiClient) {
 }
 
 func registerLalKitabDasha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "lalkitab_dasha",
 		Description: "Get the full 35-year Lal Kitab dasha schedule for a birth — the planet-ruled periods unique to the Lal Kitab system with start/end dates. Use for 'Lal Kitab dasha periods', '35-year dasha cycle'.",
 		Title:       "Lal Kitab Dasha Schedule",
@@ -151,7 +151,7 @@ func registerLalKitabDasha(s *mcp.Server, c *apiClient) {
 }
 
 func registerLalKitabDashaCurrent(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "lalkitab_dasha_current",
 		Description: "Get the currently active Lal Kitab dasha planet and period window for a birth chart. Use for 'which Lal Kitab dasha is running', 'current Lal Kitab period'.",
 		Title:       "Current Lal Kitab Dasha",
@@ -168,7 +168,7 @@ func registerLalKitabDashaCurrent(s *mcp.Server, c *apiClient) {
 // API-wide documented param).
 type RemedyByIDLocaleInput struct {
 	ID     string `json:"id" jsonschema:"remedy item ID — discover IDs via the remedy list tools"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (in RemedyByIDLocaleInput) toQuery() url.Values {
@@ -212,7 +212,7 @@ func registerRemedyYantraByID(s *mcp.Server, c *apiClient) {
 // LalKitabRemedyListInput filters the Lal Kitab remedy catalog.
 type LalKitabRemedyListInput struct {
 	Planet string `json:"planet,omitempty" jsonschema:"optional planet filter in English (sun, moon, mars, mercury, jupiter, venus, saturn, rahu, ketu)"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerRemedyLalKitabList(s *mcp.Server, c *apiClient) {
@@ -236,7 +236,7 @@ func registerRemedyLalKitabList(s *mcp.Server, c *apiClient) {
 type LalKitabRemedyLookupInput struct {
 	Planet string `json:"planet" jsonschema:"planet in English (sun, moon, mars, mercury, jupiter, venus, saturn, rahu, ketu)"`
 	House  string `json:"house" jsonschema:"Lal Kitab house number 1-12"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerRemedyLalKitabLookup(s *mcp.Server, c *apiClient) {

@@ -53,7 +53,7 @@ func registerV05Tools(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerPanchangBasic(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_basic",
 		Description: "Get the complete basic panchang for any date and location in one call: tithi (with deity, type, end-time), nakshatra (with ruling planet, deity, gana, end-time), yoga (with auspiciousness), karana (2 slots with deity and special note), vara (weekday + lord), sunrise, sunset, moonrise, moonset. Replaces 7 separate atomic calls. Use for 'today's panchang', 'what is the tithi', 'when does nakshatra change', 'panchang for Mumbai on 15 June'.",
 		Title:       "Panchang Basic (Composite)",
@@ -67,7 +67,7 @@ func registerPanchangBasic(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerPanchangAdvanced(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_advanced",
 		Description: "Get the complete advanced panchang — everything in basic plus: all muhurta windows (Rahu Kaal, Yamaganda, Gulika, Abhijit, Brahma Muhurat, Durmuhurta), Varjyam, Amrit Kalam, full 16-slot Choghadiya (day + night), Hindu month with Amanta/Purnimanta, Vikram Samvat + Samvatsara name, Ritu (season), Ayana, Sun/Moon sign, Disha Shool, Nak Shool, Moon Nivas, active Panchang Yogas (Amrit Siddhi etc.), and same-day element transitions (next tithi if it changes today). Best single call for muhurta apps. Use for 'full daily panchang', 'Rahu Kaal today', 'choghadiya for today', 'is Amrit Siddhi yoga today', 'disha shool for Monday'.",
 		Title:       "Panchang Advanced (Full)",
@@ -81,7 +81,7 @@ func registerPanchangAdvanced(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerPanchangLagnaTable(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_lagna_table",
 		Description: "Get the lagna (ascendant sign) table for a day — shows when each of the 12 zodiac signs rises on the eastern horizon with precise start/end times. Each lagna lasts roughly 1.5–2.5 hours. Used for muhurta selection (choosing an auspicious rising sign for an event). Use for 'when does Taurus rise today', 'lagna table for Mumbai', 'which lagna is rising at 4pm', 'auspicious lagna for marriage'.",
 		Title:       "Panchang Lagna Table",
@@ -106,14 +106,14 @@ type PanchangMonthlyInput struct {
 	Year        int     `json:"year" jsonschema:"Gregorian year (e.g. 2026)"`
 	Month       int     `json:"month" jsonschema:"month number 1–12"`
 	Sheet       bool    `json:"sheet,omitempty" jsonschema:"true = also return the complete printable calendar sheet: per-day tithi/nakshatra/moon-sign end-times in '27:07+' notation, kshaya days, moonrise/moonset, Hindu month, Vikram/Shaka samvat, moon phase, festivals of the day and the page header"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"language of names in the sheet: en (default), hi, mr, ta, kn, bn, gu, pa"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming for the sheet"`
 }
 
 func registerPanchangMonthly(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "panchang_monthly",
-		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. With sheet=true it is a complete printable Hindu calendar page (printed-panchang style): tithi/nakshatra/moon-sign end-times, kshaya days, moonrise/moonset, Hindu month, samvat and every festival of each day. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'make a Hindu calendar for Delhi October 2027'.",
+		Description: "Get a full month panchang calendar — one entry per day with: date, vara (weekday), tithi (name + paksha), nakshatra (name + pada), yoga, sunrise, sunset. With sheet=true it is a complete printable Hindu calendar page (printed-panchang style): tithi/nakshatra/moon-sign end-times, kshaya days, moonrise/moonset, Hindu month, samvat and every festival of each day. Use for 'panchang for June 2026', 'show all Ekadashi days this month', 'make a Hindu calendar for Delhi October 2027'. Names come back in the `locale` language.",
 		Title:       "Panchang Monthly Calendar",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in PanchangMonthlyInput) (*mcp.CallToolResult, any, error) {
 		q := url.Values{}
@@ -148,7 +148,7 @@ type NakshatraPredictionInput struct {
 }
 
 func registerPanchangNakshatraPrediction(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_nakshatra_prediction",
 		Description: "Get a personalised daily prediction based on Tara Bala — the position of today's Moon nakshatra relative to your birth nakshatra. Returns: today's Moon nakshatra, tara type (Janma/Sampat/Vipat/Kshema/Pratyak/Sadhana/Vadha/Mitra/Param-Mitra), auspiciousness score, and specific guidance for health, work, relationships, finance, and travel. Use for 'is today good for me', 'daily nakshatra prediction', 'tara bala today', 'should I travel today based on my nakshatra'.",
 		Title:       "Daily Nakshatra Prediction (Tara Bala)",
@@ -164,7 +164,7 @@ func registerPanchangNakshatraPrediction(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartAstroDetails(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_astro_details",
 		Description: "Get the complete birth chart snapshot in one call: Avakhada Chakra (Varna, Vashya, Yoni, Gana, Nadi, Paya, Tatva), Ascendant (sign, nakshatra, pada), all 9 planet positions (sign, house, nakshatra, retrograde), Sun sign, Moon sign, and complete birth panchang (tithi with deity + type, nakshatra with lord + deity, yoga, vara). Replaces 4–5 separate calls. Use for 'full birth chart details', 'avakhada of my chart', 'birth panchang', 'kundli summary'.",
 		Title:       "Astro Details (Full Birth Chart Snapshot)",
@@ -178,7 +178,7 @@ func registerChartAstroDetails(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerVarshaphalHarshaBala(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "varshaphal_harsha_bala",
 		Description: "Compute Tajika Harsha Bala (planetary strength) for the annual solar-return chart. Returns five components per planet: Stana Bala (positional), Uchcha Bala (exaltation proximity), Ooja-Yugma Bala (gender), Kendradi Bala (angular/succedent/cadent), and Drekkana Bala (decanate). Higher total = stronger planet in the annual chart. Use for 'which planet is strongest in my annual chart', 'harsha bala 2026', 'varshaphal planet strengths'.",
 		Title:       "Varshaphal Harsha Bala",
@@ -194,7 +194,7 @@ func registerVarshaphalHarshaBala(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerVarshaphalMuddaDasha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "varshaphal_mudda_dasha",
 		Description: "Compute the Varshaphal Mudda Dasha (annual dasha) periods for the solar-return year. The 9 planets each rule a fixed number of days (Sun=11, Moon=24, Mars=6, Mercury=34, Jupiter=48, Venus=20, Saturn=19, Rahu=12, Ketu=6); the sequence starts from the Varsha Lord. Returns 18 periods covering the full year (2 cycles of 180 days each). Use for 'annual dasha 2027', 'mudda dasha periods', 'which planet period am I in this year'.",
 		Title:       "Varshaphal Mudda Dasha",
@@ -211,7 +211,8 @@ func registerVarshaphalMuddaDasha(s *mcp.Server, c *apiClient) {
 
 type YearlyBhavishyafalInput struct {
 	BirthInput
-	Year int `json:"year" jsonschema:"target year for the horoscope (e.g. 2027)"`
+	Year int    `json:"year" jsonschema:"target year for the horoscope (e.g. 2027)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeYearlyBhavishyafal(s *mcp.Server, c *apiClient) {
@@ -227,6 +228,9 @@ func registerNarrativeYearlyBhavishyafal(s *mcp.Server, c *apiClient) {
 		q.Set("lat", strconv.FormatFloat(in.Lat, 'f', -1, 64))
 		q.Set("lon", strconv.FormatFloat(in.Lon, 'f', -1, 64))
 		q.Set("year", strconv.Itoa(in.Year))
+		if in.Lang != "" {
+			q.Set("lang", in.Lang)
+		}
 		return callPassthrough(ctx, c, "/v1/vedic/narrative/yearly-bhavishyafal", q)
 	})
 }

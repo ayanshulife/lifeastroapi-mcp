@@ -26,6 +26,12 @@ import (
 //
 // LIFEASTRO_LIVE_DUMP=1 prints every tool's input properties instead of
 // calling anything (used to maintain liveArgs below).
+//
+// LIFEASTRO_LIVE_LOCALE=gu (or hi, ta, ...) passes that language to every
+// tool that has a `lang` or `locale` input, and lists the tools whose
+// answer then carries no text in an Indian script. A few are expected
+// there: endpoints whose only localized fields are empty for the sample
+// (no planetary war in the sample chart, no siddha yoga on the sample day).
 
 type liveSchema struct {
 	Properties map[string]struct {
@@ -134,6 +140,8 @@ func TestLiveAllTools(t *testing.T) {
 	)
 	defer pace.Stop()
 	only := os.Getenv("LIFEASTRO_LIVE_ONLY") // comma-separated tool names to re-run
+	locale := os.Getenv("LIFEASTRO_LIVE_LOCALE")
+	var localized, notLocalized []string
 	// Name prefixes to leave out, e.g. "report_" — the composed reports
 	// cost 500–8000 credits each, so a routine sweep skips them.
 	skip := strings.Split(os.Getenv("LIFEASTRO_LIVE_SKIP"), ",")
@@ -165,13 +173,22 @@ func TestLiveAllTools(t *testing.T) {
 		for n, v := range liveToolArgs[tl.Name] {
 			args[n] = v
 		}
+		hasLanguage := false
+		if locale != "" {
+			for _, n := range []string{"lang", "locale"} {
+				if _, ok := sc.Properties[n]; ok {
+					args[n] = locale
+					hasLanguage = true
+				}
+			}
+		}
 		if len(missing) > 0 {
 			failed = append(failed, result{tl.Name, "no sample value for required: " + strings.Join(missing, ",")})
 			continue
 		}
 		<-pace.C
 		wg.Add(1)
-		go func(name string, args map[string]any) {
+		go func(name string, args map[string]any, hasLanguage bool) {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
@@ -196,8 +213,22 @@ func TestLiveAllTools(t *testing.T) {
 				mu.Lock()
 				failed = append(failed, result{name, msg + "  args=" + string(a)})
 				mu.Unlock()
+			} else if hasLanguage {
+				text := ""
+				if len(res.Content) > 0 {
+					if tc, ok := res.Content[0].(*mcp.TextContent); ok {
+						text = tc.Text
+					}
+				}
+				mu.Lock()
+				if hasIndicScript(text) {
+					localized = append(localized, name)
+				} else {
+					notLocalized = append(notLocalized, name)
+				}
+				mu.Unlock()
 			}
-		}(tl.Name, args)
+		}(tl.Name, args, hasLanguage)
 	}
 	wg.Wait()
 
@@ -206,6 +237,22 @@ func TestLiveAllTools(t *testing.T) {
 		t.Errorf("FAIL %s: %s", f.name, f.msg)
 	}
 	t.Logf("live sweep: %d tools, %d failed", len(tools), len(failed))
+	if locale != "" {
+		sort.Strings(notLocalized)
+		t.Logf("locale %s: %d tools answered in the language, %d without text in an Indian script: %s",
+			locale, len(localized), len(notLocalized), strings.Join(notLocalized, ", "))
+	}
+}
+
+// hasIndicScript reports whether s has a letter of an Indian script
+// (Devanagari through Malayalam, U+0900-U+0D7F).
+func hasIndicScript(s string) bool {
+	for _, r := range s {
+		if r >= 0x0900 && r <= 0x0D7F {
+			return true
+		}
+	}
+	return false
 }
 
 // liveArg returns a realistic sample value for a required input property.
@@ -273,7 +320,7 @@ var liveToolArgs = map[string]map[string]any{
 	"dasha_char_pratyantardashas":   {"md": "leo", "ad": "scorpio"},
 	"western_retrograde_window":     {"planet": "Mercury"},
 	"remedy_lalkitab_for_placement": {"planet": "saturn", "house": "8"},
-	"narrative_dosha_by_id":         {"id": "mangal_dosha"},
+	"narrative_dosha_by_id":         {"id": "mangal"},
 	"narrative_yoga_by_id":          {"id": "hamsa"},
 	"tarot_card":                    {"id": 5},
 	"tarot_spread":                  {"type": "three"},

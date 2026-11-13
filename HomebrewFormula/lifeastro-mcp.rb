@@ -10,7 +10,7 @@
 #     without a tap. Requires a stable release history first (per Homebrew's
 #     audit policy: 30 days + GitHub stars threshold).
 #
-# Maintainer release flow when cutting a new version (e.g. `v0.11.0`):
+# Maintainer release flow when cutting a new version (e.g. `v0.12.0`):
 #   1. Tag the commit and push the tag.
 #   2. Wait for the GitHub Actions release workflow, then publish the draft.
 #   3. Update `version` below.
@@ -28,7 +28,7 @@
 #    artifacts via `url` + `sha256`.
 
 class LifeastroMcp < Formula
-  desc "LifeAstroAPI MCP server — 310 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
+  desc "LifeAstroAPI MCP server — 320 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
   homepage "https://github.com/ayanshulife/lifeastroapi-mcp"
   version "0.11.0"
   license "MIT"

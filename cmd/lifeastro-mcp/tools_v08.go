@@ -91,7 +91,7 @@ type AshtakavargaBhinnaInput struct {
 }
 
 func registerAshtakavargaBhinna(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "ashtakavarga_bhinna",
 		Description: "Get the Bhinna (individual planet) Ashtakavarga table for one planet — the 12-sign grid showing how many of the 8 reference points (7 planets + lagna) contribute benefic points to each sign for that planet's transit. Max 8 per sign. Use for 'Jupiter ashtakavarga table', 'Saturn bhinna ashtakavarga', 'how many points does Mars have in each sign'.",
 		Title:       "Bhinna Ashtakavarga (Single Planet)",
@@ -110,7 +110,7 @@ type ChartSinglePlanetInput struct {
 }
 
 func registerChartSinglePlanet(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_single_planet",
 		Description: "Get the detailed placement of a single planet in a Vedic birth chart — sign, degree, nakshatra, pada, house, speed, retrograde flag, dignity, and aspects received. More concise than chart_planets when you only need one graha. Use for 'where is Saturn in my chart', 'Jupiter placement details', 'Mars degree and nakshatra'.",
 		Title:       "Single Planet Detail",
@@ -134,7 +134,7 @@ type ChartShadbalaComponentInput struct {
 }
 
 func registerChartShadbalaComponent(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_shadbala_component",
 		Description: "Get a specific Shadbala component for all planets — one of the 6 strength types: sthana bala (positional), dig bala (directional), kala bala (temporal), cheshta bala (motional/retrogression), naisargika bala (natural), drik bala (aspectual). Use when you need to understand why a planet is strong or weak in a specific dimension. Use for 'dig bala of all planets', 'temporal strength shadbala', 'cheshta bala'.",
 		Title:       "Shadbala Component Breakdown",
@@ -154,7 +154,7 @@ type DashaVimshottariMahaInput struct {
 }
 
 func registerDashaVimshottariMaha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_vimshottari_mahadasha",
 		Description: "Get all Antardasha sub-periods within a specific Vimshottari Mahadasha — returns the 9 antardasha periods (with start/end dates) nested under the requested mahadasha lord. Use when you want 'all antardasha periods inside my Saturn mahadasha', 'sub-periods in Jupiter dasha', 'when does Rahu-Sun antardasha start in my Rahu mahadasha'.",
 		Title:       "Vimshottari Antardasha List (within a Mahadasha)",
@@ -171,7 +171,7 @@ type DashaVimshottariAntarInput struct {
 }
 
 func registerDashaVimshottariAntar(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_vimshottari_antardasha",
 		Description: "Get all Pratyantardasha sub-sub-periods within a specific Vimshottari Mahadasha + Antardasha combination. Use for 'all pratyantardasha inside my Saturn-Jupiter antardasha', 'sub-sub-periods in Rahu-Moon', 'drill down into a specific dasha pair'.",
 		Title:       "Vimshottari Pratyantardasha List",
@@ -189,7 +189,7 @@ type DashaVimshottariPratyantarInput struct {
 }
 
 func registerDashaVimshottariPratyantar(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_vimshottari_pratyantardasha",
 		Description: "Get all Sookshma sub-sub-sub-periods within a specific 3-level Vimshottari combination (Maha + Antar + Pratyantar). Use for 'sookshma periods inside Saturn-Jupiter-Mercury', 'drill 3 levels into dasha timeline'.",
 		Title:       "Vimshottari Sookshma List",
@@ -208,7 +208,7 @@ type DashaVimshottariSookshmaInput struct {
 }
 
 func registerDashaVimshottariSookshma(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_vimshottari_sookshma",
 		Description: "Get all Prana (5th level) sub-sub-sub-sub-periods within a specific 4-level Vimshottari combination. The finest dasha granularity — each Prana period spans a few days. Use for 'prana periods in Saturn-Jupiter-Mercury-Venus sookshma', '5th level vimshottari dasha'.",
 		Title:       "Vimshottari Prana List (5th Level)",
@@ -224,7 +224,7 @@ type DashaYoginiByNameInput struct {
 }
 
 func registerDashaYoginiFindByName(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_yogini_by_name",
 		Description: "Get the Yogini Dasha sub-periods for a specific Yogini lord — when does a particular Yogini period (Mangala, Pingala, Dhanya, Bhramari, Bhadrika, Ulka, Siddha, or Sankata) run and what are its sub-periods. Use for 'when is my Siddha yogini period', 'Ulka yogini sub-periods', 'find Bhadrika in my timeline'.",
 		Title:       "Yogini Dasha by Name",
@@ -239,7 +239,7 @@ func registerDashaYoginiFindByName(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerEclipsesAll(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "eclipses_all",
 		Description: "Get all upcoming eclipses (both solar and lunar) in a single call — returns the combined list of solar and lunar eclipses in chronological order with type, date, visibility path, and magnitude. Use for 'all eclipses this year', 'next eclipse solar or lunar', 'eclipse calendar 2026'.",
 		Title:       "All Eclipses (Solar + Lunar Combined)",
@@ -277,7 +277,7 @@ type MilanSingleKootaInput struct {
 }
 
 func registerMilanSingleKoota(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_ashtakoota_single",
 		Description: "Get the score and detailed explanation for a single Ashtakoota koota — one of: varna, vashya, tara, yoni, graha_maitri, gana, bhakoot, or nadi. Returns the score for that koota with the classical reasoning. Use for 'explain our nadi koota', 'what is our yoni koota score', 'bhakoot dosha details', 'why did we score 0 on nadi'.",
 		Title:       "Single Ashtakoota Koota Detail",
@@ -295,7 +295,7 @@ func registerMilanSingleKoota(s *mcp.Server, c *apiClient) {
 type NarrativeDivisionalInput struct {
 	BirthInput
 	Varga string `json:"varga" jsonschema:"divisional chart code: D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D16, D20, D24, D27, D30, D40, D45, D60"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeDivisional(s *mcp.Server, c *apiClient) {
@@ -315,7 +315,7 @@ func registerNarrativeDivisional(s *mcp.Server, c *apiClient) {
 type NarrativeYogaByIDInput struct {
 	BirthInput
 	ID   string `json:"id" jsonschema:"yoga ID from meta_vedic_yogas (e.g. 'hamsa', 'malavya', 'raja_yoga_1_5', 'kemadruma')"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeYogaByID(s *mcp.Server, c *apiClient) {
@@ -334,8 +334,8 @@ func registerNarrativeYogaByID(s *mcp.Server, c *apiClient) {
 
 type NarrativeDoshaByIDInput struct {
 	BirthInput
-	ID   string `json:"id" jsonschema:"dosha ID from meta_vedic_doshas (e.g. 'mangal_dosha', 'kaal_sarp', 'pitru_dosha', 'grahan_yoga')"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	ID   string `json:"id" jsonschema:"dosha ID from meta_vedic_doshas (e.g. 'mangal', 'kaalsarp', 'pitra')"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerNarrativeDoshaByID(s *mcp.Server, c *apiClient) {
@@ -358,7 +358,7 @@ func registerNarrativeDoshaByID(s *mcp.Server, c *apiClient) {
 
 type RemedyByRuleIDInput struct {
 	ID   string `json:"id" jsonschema:"rule ID for the remedy (e.g. a planet-in-sign or yoga rule ID that has an associated remedy)"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerRemedyByRuleID(s *mcp.Server, c *apiClient) {
@@ -377,7 +377,7 @@ func registerRemedyByRuleID(s *mcp.Server, c *apiClient) {
 
 type RemedyByIDInput struct {
 	ID   string `json:"id" jsonschema:"remedy item ID — use meta_vedic_yogas or vedic_remedies to discover valid IDs"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerRemedyMantraByID(s *mcp.Server, c *apiClient) {

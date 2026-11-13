@@ -18,7 +18,9 @@ import (
 // (transit/positions, chart/planets) return arrays.
 func callPassthrough(ctx context.Context, c *apiClient, path string, q url.Values) (*mcp.CallToolResult, any, error) {
 	var raw json.RawMessage
-	if err := c.get(ctx, path, q, &raw); err != nil {
+	// Tools registered with addLocalizedTool carry their `locale` argument
+	// in ctx; it becomes ?locale= here.
+	if err := c.get(ctx, path, withLocale(ctx, q), &raw); err != nil {
 		return errResult(err)
 	}
 	// Re-marshal with indent so the AI client's text view is readable.
@@ -46,6 +48,13 @@ func callPassthrough(ctx context.Context, c *apiClient, path string, q url.Value
 // (ctx, *mcp.CallToolRequest, Input) → (*mcp.CallToolResult, Output, error),
 // and call mcp.AddTool. The schema is auto-inferred from struct
 // tags; no manual JSON Schema authoring.
+//
+// Language: a Vedic tool whose endpoint answers in the request language
+// either has its own `lang`/`locale` field (description: vedicLanguageDesc,
+// word for word) or is registered with addLocalizedTool instead of
+// mcp.AddTool, which adds an optional `locale` input. A tool whose endpoint
+// returns only numbers, times and ids takes no language and is listed in
+// noLanguageTools (tools_test.go). See locale.go.
 func registerAllTools(server *mcp.Server, client *apiClient) {
 	// v0.1 — the original 12 tools (panchang/today, chart basics,
 	// dasha current, mangal/match, sade-sati, horoscope d/w, transits).
@@ -119,6 +128,8 @@ func registerAllTools(server *mcp.Server, client *apiClient) {
 	// yogas, doshas, birth-time sensitivity; Sade Sati windows and planet
 	// transit windows; remedies for a graha; milan overlay and summary.
 	// milan_dasha_sync also takes the new timeline options.
+	// Also in v0.12: the language update (locale.go) — one language list on
+	// every Vedic tool and an optional `locale` on 111 data tools.
 	registerV12Tools(server, client)
 
 	// v0.7 — 60 additional tools: vedic narrative (32: career-outlook/
@@ -213,7 +224,7 @@ type PanchangTodayInput struct {
 }
 
 func registerPanchangToday(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "panchang_today",
 		Description: "Get the Hindu daily panchang for a location: tithi (lunar day), vara (weekday), nakshatra (lunar mansion), yoga, karana, sunrise/sunset, and Rahu Kaal / Yamaganda / Gulika muhurat windows. Use for 'what's the panchang today', 'is today auspicious', 'when is Rahu Kaal'.",
 		Title:       "Daily Panchang",
@@ -232,7 +243,7 @@ func registerPanchangToday(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartAscendant(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_ascendant",
 		Description: "Compute the rising sign (lagna / ascendant) of a Vedic birth chart. Returns sign, degree, nakshatra and pada. Use for 'what is my lagna', 'rising sign for birth on X date'.",
 		Title:       "Birth Chart Ascendant (Lagna)",
@@ -246,7 +257,7 @@ func registerChartAscendant(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartPlanets(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_planets",
 		Description: "Compute the placement of all 9 grahas (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) in a Vedic birth chart: sign, degree, nakshatra, house, retrograde flag. Use whenever someone asks 'where is my Saturn', 'what's my Moon sign', or wants the full birth chart.",
 		Title:       "Birth Chart Planet Positions",
@@ -260,7 +271,7 @@ func registerChartPlanets(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartNavamsa(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_navamsa",
 		Description: "Compute the Navamsa (D9) divisional chart, used in Vedic astrology for marriage, dharma, and the inner spouse. Returns Navamsa lagna and each planet's Navamsa sign + house. Use for 'show my Navamsa', 'D9 chart', 'marriage chart'.",
 		Title:       "Navamsa (D9) Divisional Chart",
@@ -274,9 +285,9 @@ func registerChartNavamsa(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerChartNakshatra(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_nakshatra",
-		Description: "Get the birth (Janma) nakshatra and pada — the lunar mansion the Moon was in at birth, used for naming, muhurta, and Vimshottari dasha. Returns nakshatra name (English + Devanagari), pada (1-4), and ruling planet. Use for 'what's my birth nakshatra', 'janma nakshatra'.",
+		Description: "Get the birth (Janma) nakshatra and pada — the lunar mansion the Moon was in at birth, used for naming, muhurta, and Vimshottari dasha. Returns the nakshatra, pada (1-4) and nakshatra lord of every planet. Use for 'what's my birth nakshatra', 'janma nakshatra'.",
 		Title:       "Birth Nakshatra",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in BirthInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/chart/nakshatra", in.toQuery())
@@ -293,7 +304,7 @@ type DashaCurrentInput struct {
 }
 
 func registerDashaCurrent(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "dasha_current",
 		Description: "Get the currently running 5-level Vimshottari Mahadasha / Antardasha / Pratyantardasha / Sookshma / Prana stack for a birth chart. Use for 'what's my current mahadasha', 'which dasha am I in', 'what dasha is running on date X'.",
 		Title:       "Current Vimshottari Dasha",
@@ -311,7 +322,7 @@ func registerDashaCurrent(s *mcp.Server, c *apiClient) {
 // =====================================================================
 
 func registerMangalDosha(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "mangal_dosha",
 		Description: "Check whether a birth chart has Mangal Dosha (Manglik condition) — Mars in a position that classically affects marriage. Returns presence flag, sub-rule (BPHS strict / modern North / from Moon), cancellation status, and severity. Use for 'am I Manglik', 'check Mars dosha', 'Manglik or not'.",
 		Title:       "Mangal Dosha Check",
@@ -370,7 +381,7 @@ func registerSadeSati(s *mcp.Server, c *apiClient) {
 type HoroscopeInput struct {
 	Rashi string `json:"rashi" jsonschema:"Moon sign / rashi name in English (Aries, Taurus, ..., Pisces) or Hindi (Mesha, Vrishabha, ...). Case-insensitive."`
 	Date  string `json:"date,omitempty" jsonschema:"optional YYYY-MM-DD; defaults to today UTC"`
-	Lang  string `json:"lang,omitempty" jsonschema:"optional response language: en (default), hi, mr"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func (h HoroscopeInput) toQuery() url.Values {
@@ -388,7 +399,7 @@ func (h HoroscopeInput) toQuery() url.Values {
 func registerHoroscopeDaily(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "horoscope_daily",
-		Description: "Get the daily horoscope for a Vedic Moon sign (rashi) — covers career, relationships, health, finance themes for the day plus daily lucky factors (color, number, direction). Use for 'today's horoscope for Aries', 'rashifal for Vrishabha'.",
+		Description: "Get the daily horoscope for a Vedic Moon sign (rashi) — covers career, relationships, health, finance themes for the day plus daily lucky factors (color, number, direction). Use for 'today's horoscope for Aries', 'rashifal for Vrishabha'. Text and names come back in the `lang` language.",
 		Title:       "Daily Horoscope by Rashi",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in HoroscopeInput) (*mcp.CallToolResult, any, error) {
 		// Normalize rashi to lowercase to match API expectations.
@@ -404,7 +415,7 @@ func registerHoroscopeDaily(s *mcp.Server, c *apiClient) {
 func registerHoroscopeWeekly(s *mcp.Server, c *apiClient) {
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "horoscope_weekly",
-		Description: "Get the weekly horoscope for a Vedic Moon sign (rashi). Returns the 7-day outlook with major planetary themes, week-spanning transits, and a focus recommendation. Use for 'this week's horoscope', 'weekly rashifal'.",
+		Description: "Get the weekly horoscope for a Vedic Moon sign (rashi). Returns the 7-day outlook with major planetary themes, week-spanning transits, and a focus recommendation. Use for 'this week's horoscope', 'weekly rashifal'. Text and names come back in the `lang` language.",
 		Title:       "Weekly Horoscope by Rashi",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in HoroscopeInput) (*mcp.CallToolResult, any, error) {
 		in.Rashi = strings.ToLower(strings.TrimSpace(in.Rashi))
@@ -423,7 +434,7 @@ type TransitPositionsInput struct {
 }
 
 func registerTransitPositions(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "transits_now",
 		Description: "Get the current sidereal positions of all 9 grahas — the live sky positions used to evaluate current transits, gochar effects, and dasha-transit interplay. Returns each planet's sign, degree, nakshatra, and retrograde flag at the requested moment. Use for 'where are the planets now', 'current transits', 'gochar today'.",
 		Title:       "Current Planetary Transits",

@@ -36,6 +36,8 @@ test:
 ## tool). LIVE_SKIP is a comma-separated list of tool-name prefixes to
 ## leave out — the composed reports by default, since they cost 500-8000
 ## credits each. Point at another server with LIFEASTRO_API_URL.
+## LIFEASTRO_LIVE_LOCALE=gu also passes that language to every tool that
+## takes one and lists the tools that answered without text in it.
 LIVE_SKIP ?= report_
 live:
 	LIFEASTRO_LIVE_SKIP=$(LIVE_SKIP) go test -tags live -count=1 -run TestLiveAllTools -timeout 20m ./cmd/lifeastro-mcp/

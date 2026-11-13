@@ -70,7 +70,7 @@ type ChartKundliFactsInput struct {
 }
 
 func registerChartKundliFacts(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_kundli_facts",
 		Description: "Get the whole Vedic birth chart as structured data in one call (50 credits): lagna; every graha with sign, degree, house, nakshatra, pada, retrograde, combust, dignity, neecha bhanga, vargottama, houses it rules, shadbala, avastha and divisional placements; every house with sign, lord, SAV bindus, bhava bala, occupants and aspecting grahas; Jaimini chara karakas; avakhada. include=yogas also adds the yoga and dosha items. Best single tool when you need to reason about a chart yourself. Use for 'analyse my kundli', 'which planets are strong in my chart', 'full chart data'." + idsNote,
 		Title:       "Kundli Facts (Full Chart Data)",
@@ -215,7 +215,7 @@ type RemedyForGrahaInput struct {
 	Reason   string `json:"reason,omitempty" jsonschema:"optional: debilitated, combust, dusthana, weak_shadbala, dasha, or dosha:<id> such as dosha:sade_sati, dosha:mangal, dosha:kaalsarp, dosha:pitra"`
 	Include  string `json:"include,omitempty" jsonschema:"optional comma list of extra kinds beyond the free ones: pooja, pilgrimage, yantra, rudraksha"`
 	Category string `json:"category,omitempty" jsonschema:"optional: limit to one catalogue category (mantra, daan, vrat, pooja, yantra, rudraksha)"`
-	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, bn, kn, ta, te, gu"`
+	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
 }
 
 func registerRemedyForGraha(s *mcp.Server, c *apiClient) {
@@ -256,7 +256,7 @@ type MilanSummaryInput struct {
 }
 
 func registerMilanSummary(s *mcp.Server, c *apiClient) {
-	mcp.AddTool(s, &mcp.Tool{
+	addLocalizedTool(s, &mcp.Tool{
 		Name:        "milan_summary",
 		Description: "Get all the kundli matching data for a couple in one call (60 credits), with numbers identical to the separate tools: Ashtakoota with every koota, navamsa compatibility, Mangal dosha of both with a pair status (none/both/boy_only/girl_only), 7th-house facts of both (7th lord, Venus, Jupiter, D9 7th, D7 5th) and 10 years of Sade Sati windows for both. No verdict beyond the Ashtakoota one. Use for 'full compatibility check', 'complete kundli milan data', 'is this match good overall'." + idsNote,
 		Title:       "Milan Summary (Matching Data Bundle)",
