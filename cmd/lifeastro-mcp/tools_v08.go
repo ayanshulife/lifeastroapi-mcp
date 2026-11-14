@@ -295,7 +295,7 @@ func registerMilanSingleKoota(s *mcp.Server, c *apiClient) {
 type NarrativeDivisionalInput struct {
 	BirthInput
 	Varga string `json:"varga" jsonschema:"divisional chart code: D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D16, D20, D24, D27, D30, D40, D45, D60"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerNarrativeDivisional(s *mcp.Server, c *apiClient) {
@@ -315,7 +315,7 @@ func registerNarrativeDivisional(s *mcp.Server, c *apiClient) {
 type NarrativeYogaByIDInput struct {
 	BirthInput
 	ID   string `json:"id" jsonschema:"yoga ID from meta_vedic_yogas (e.g. 'hamsa', 'malavya', 'raja_yoga_1_5', 'kemadruma')"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerNarrativeYogaByID(s *mcp.Server, c *apiClient) {
@@ -335,7 +335,7 @@ func registerNarrativeYogaByID(s *mcp.Server, c *apiClient) {
 type NarrativeDoshaByIDInput struct {
 	BirthInput
 	ID   string `json:"id" jsonschema:"dosha ID from meta_vedic_doshas (e.g. 'mangal', 'kaalsarp', 'pitra')"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerNarrativeDoshaByID(s *mcp.Server, c *apiClient) {
@@ -358,7 +358,7 @@ func registerNarrativeDoshaByID(s *mcp.Server, c *apiClient) {
 
 type RemedyByRuleIDInput struct {
 	ID   string `json:"id" jsonschema:"rule ID for the remedy (e.g. a planet-in-sign or yoga rule ID that has an associated remedy)"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerRemedyByRuleID(s *mcp.Server, c *apiClient) {
@@ -377,7 +377,7 @@ func registerRemedyByRuleID(s *mcp.Server, c *apiClient) {
 
 type RemedyByIDInput struct {
 	ID   string `json:"id" jsonschema:"remedy item ID — use meta_vedic_yogas or vedic_remedies to discover valid IDs"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerRemedyMantraByID(s *mcp.Server, c *apiClient) {

@@ -215,7 +215,7 @@ type RemedyForGrahaInput struct {
 	Reason   string `json:"reason,omitempty" jsonschema:"optional: debilitated, combust, dusthana, weak_shadbala, dasha, or dosha:<id> such as dosha:sade_sati, dosha:mangal, dosha:kaalsarp, dosha:pitra"`
 	Include  string `json:"include,omitempty" jsonschema:"optional comma list of extra kinds beyond the free ones: pooja, pilgrimage, yantra, rudraksha"`
 	Category string `json:"category,omitempty" jsonschema:"optional: limit to one catalogue category (mantra, daan, vrat, pooja, yantra, rudraksha)"`
-	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang     string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerRemedyForGraha(s *mcp.Server, c *apiClient) {

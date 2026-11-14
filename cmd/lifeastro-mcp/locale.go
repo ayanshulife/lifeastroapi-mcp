@@ -30,7 +30,7 @@ import (
 // the list has to be the same everywhere. TestLanguageInputs checks that.
 const (
 	// vedicLanguageDesc describes the language input of every Vedic tool.
-	vedicLanguageDesc = "response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"
+	vedicLanguageDesc = "response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"
 	// westernLanguageDesc describes the language input of the Western
 	// narrative tools, the only Western routes that are not English-only.
 	westernLanguageDesc = "response language: en (default), hi, mr"

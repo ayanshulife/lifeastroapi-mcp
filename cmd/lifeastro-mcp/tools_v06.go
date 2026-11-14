@@ -355,7 +355,7 @@ type FestivalsOnDateInput struct {
 	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude in decimal degrees — vrat dates depend on local sunrise/moonrise; defaults to New Delhi"`
 	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude in decimal degrees; defaults to New Delhi"`
 	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone for the civil date (e.g. Asia/Kolkata); defaults to Asia/Kolkata"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming"`
 }
 
@@ -390,7 +390,7 @@ type FestivalsVratInput struct {
 	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude (dates depend on local sunrise/moonrise); defaults to New Delhi"`
 	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude; defaults to New Delhi"`
 	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone; defaults to Asia/Kolkata"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta'"`
 }
 
@@ -672,12 +672,12 @@ func registerMuhurtaYatra(s *mcp.Server, c *apiClient) {
 
 type NumerologyNameInput struct {
 	Name string `json:"name" jsonschema:"full name as written on official documents"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 type NumerologyDobInput struct {
 	Dob  string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD format"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func numerologyNameQuery(in NumerologyNameInput) url.Values {

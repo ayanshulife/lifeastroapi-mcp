@@ -211,7 +211,7 @@ func (p WesternPrimaryDirectionsInput) toQuery() url.Values {
 type NumerologyDOBLangInput struct {
 	DOB     string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD format"`
 	RefDate string `json:"ref_date,omitempty" jsonschema:"optional reference date YYYY-MM-DD (defaults to today) for personal-periods"`
-	Lang    string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang    string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func (n NumerologyDOBLangInput) toQuery() url.Values {
@@ -230,7 +230,7 @@ func (n NumerologyDOBLangInput) toQuery() url.Values {
 type NumerologyAdvancedInput struct {
 	Name string `json:"name" jsonschema:"full name (used for Karmic Lessons, Hidden Passion, Balance, Sub-conscious Self)"`
 	DOB  string `json:"dob,omitempty" jsonschema:"optional date of birth YYYY-MM-DD (required for Maturity Number)"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func (n NumerologyAdvancedInput) toQuery() url.Values {

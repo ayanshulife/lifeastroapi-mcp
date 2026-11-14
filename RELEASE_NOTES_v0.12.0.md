@@ -1,6 +1,6 @@
 # lifeastro-mcp v0.12.0
 
-Eight languages on every Vedic tool, and ten new tools that return the chart as data.
+Nine languages on every Vedic tool, and ten new tools that return the chart as data.
 
 ## Languages
 
@@ -9,7 +9,7 @@ nakshatras, tithis, festivals), labels, notes and the interpretation text. This 
 makes the tools ask for it.
 
 - One language list on every Vedic tool: `en` (default), `hi`, `mr`, `te`, `ta`, `kn`, `ml`,
-  `gu`; `bn` and `pa` return names and terms in the language, longer text in English.
+  `gu`, `bn`; `pa` returns names and terms in the language, longer text in English.
   Earlier releases listed only "en, hi, mr" (or left out Telugu, Malayalam and Gujarati) on
   most tools, so an assistant never asked for the other languages. 82 input descriptions
   corrected.

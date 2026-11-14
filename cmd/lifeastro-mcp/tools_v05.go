@@ -106,7 +106,7 @@ type PanchangMonthlyInput struct {
 	Year        int     `json:"year" jsonschema:"Gregorian year (e.g. 2026)"`
 	Month       int     `json:"month" jsonschema:"month number 1–12"`
 	Sheet       bool    `json:"sheet,omitempty" jsonschema:"true = also return the complete printable calendar sheet: per-day tithi/nakshatra/moon-sign end-times in '27:07+' notation, kshaya days, moonrise/moonset, Hindu month, Vikram/Shaka samvat, moon phase, festivals of the day and the page header"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"'purnimanta' (default) or 'amanta' month naming for the sheet"`
 }
 
@@ -212,7 +212,7 @@ func registerVarshaphalMuddaDasha(s *mcp.Server, c *apiClient) {
 type YearlyBhavishyafalInput struct {
 	BirthInput
 	Year int    `json:"year" jsonschema:"target year for the horoscope (e.g. 2027)"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu (bn, pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
 }
 
 func registerNarrativeYearlyBhavishyafal(s *mcp.Server, c *apiClient) {

@@ -190,7 +190,7 @@ The data tools (`chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sens
 
 ### Languages
 
-The Vedic tools answer in the language you ask for: **English (default), Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam and Gujarati**. Names (planets, signs, nakshatras, tithis, festivals), labels, notes and the interpretation text all come back in that language. Bengali and Punjabi return names and terms in the language; longer text is still English.
+The Vedic tools answer in the language you ask for: **English (default), Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam, Gujarati and Bengali**. Names (planets, signs, nakshatras, tithis, festivals), labels, notes and the interpretation text all come back in that language. Punjabi returns names and terms in the language; longer text is still English.
 
 - 188 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
 - 25 Vedic tools have no language input because their answer is only numbers, times and ids (for example `panchang_rahu_kaal`, `panchang_sunrise_sunset`, `ashtakavarga_sarva`, `transit_windows`, `chart_yogas`).
