@@ -300,34 +300,40 @@ func registerChartHouseOccupants(s *mcp.Server, c *apiClient) {
 
 type KPInput struct {
 	BirthInput
-	Cusp int `json:"cusp" jsonschema:"house cusp number 1–12 for KP analysis"`
+	Cusp     int    `json:"cusp,omitempty" jsonschema:"optional and ignored: all 12 cusps are always returned (kept for compatibility)"`
+	Ayanamsa string `json:"ayanamsa,omitempty" jsonschema:"optional ayanamsa (default lahiri); use krishnamurti for KP work"`
 }
 
 func registerChartKPHouseSignificator(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_kp_house_significator",
-		Description: "Get KP (Krishnamurti Paddhati) house significators for a given cusp — lists planets that significate the house through occupancy, lordship, and sub-lord chain. Used in KP astrology for event timing and prediction. Use for 'KP significators for 7th house', 'KP house analysis', 'krishnamurti paddhati'.",
+		Description: "Get KP (Krishnamurti Paddhati) data for all 12 Placidus cusps of a birth chart (20 credits): each cusp's star, sub and sub-sub lords and its significator planets (four KP levels, strongest first), the houses every planet signifies, and the KP 4-step chain of every planet. Used in KP astrology for event analysis and timing. Set ayanamsa to krishnamurti for KP work. Use for 'KP significators for 7th house', 'KP house analysis', 'cuspal sub lord', 'KP 4-step', 'krishnamurti paddhati'.",
 		Title:       "KP House Significator",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in KPInput) (*mcp.CallToolResult, any, error) {
 		q := in.BirthInput.toQuery()
-		q.Set("cusp", strconv.Itoa(in.Cusp))
+		if in.Cusp > 0 {
+			q.Set("cusp", strconv.Itoa(in.Cusp))
+		}
+		setIf(q, "ayanamsa", in.Ayanamsa)
 		return callPassthrough(ctx, c, "/v1/chart/kp-house-significator", q)
 	})
 }
 
 type KPSublordInput struct {
 	BirthInput
-	Planet string `json:"planet" jsonschema:"planet name for KP sublord analysis: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu"`
+	Planet   string `json:"planet,omitempty" jsonschema:"optional and ignored: every planet is always returned (kept for compatibility)"`
+	Ayanamsa string `json:"ayanamsa,omitempty" jsonschema:"optional ayanamsa (default lahiri); use krishnamurti for KP work"`
 }
 
 func registerChartKPSublord(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "chart_kp_sublord",
-		Description: "Get the KP sublord of a planet — the sub-lord of the nakshatra sub-division the planet occupies (KP star lord → sub lord → sub-sub lord chain). Central to KP timing. Use for 'KP sublord of Moon', 'star lord and sub lord', 'KP planet analysis'.",
+		Description: "Get the KP star lord, sub lord and sub-sub lord of every planet (10 credits), and the KP ruling planets for the given moment and place (day lord, and the star, sign and sub lords of the ascendant and the Moon). Send the moment of the question for KP ruling planets in horary or timing. Set ayanamsa to krishnamurti for KP work. Use for 'KP sublord of Moon', 'star lord and sub lord', 'KP ruling planets', 'KP planet analysis'.",
 		Title:       "KP Sublord",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in KPSublordInput) (*mcp.CallToolResult, any, error) {
 		q := in.BirthInput.toQuery()
-		q.Set("planet", in.Planet)
+		setIf(q, "planet", in.Planet)
+		setIf(q, "ayanamsa", in.Ayanamsa)
 		return callPassthrough(ctx, c, "/v1/chart/kp-sublord", q)
 	})
 }

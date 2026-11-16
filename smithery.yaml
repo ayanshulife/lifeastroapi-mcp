@@ -1,6 +1,6 @@
 # Smithery registry config: https://smithery.ai/docs/build/project-config
 # The server speaks MCP over stdio and needs one secret, the LifeAstroAPI key.
-# Without a key it still starts and lists its 320 tools (so the registry can
+# Without a key it still starts and lists its 321 tools (so the registry can
 # inspect it); each tool call then explains how to set the key.
 startCommand:
   type: stdio

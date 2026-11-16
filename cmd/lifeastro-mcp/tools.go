@@ -131,6 +131,7 @@ func registerAllTools(server *mcp.Server, client *apiClient) {
 	// Also in v0.12: the language update (locale.go) — one language list on
 	// every Vedic tool and an optional `locale` on 111 data tools.
 	registerV12Tools(server, client)
+	registerV13Tools(server, client)
 
 	// v0.7 — 60 additional tools: vedic narrative (32: career-outlook/
 	// dasha-phal/dasha-tree-phal/doshas/finance-outlook/horoscope-daily-

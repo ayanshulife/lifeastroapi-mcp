@@ -4,7 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/ayanshulife/lifeastroapi-mcp.svg)](https://pkg.go.dev/github.com/ayanshulife/lifeastroapi-mcp)
 [![Release](https://img.shields.io/github/v/release/ayanshulife/lifeastroapi-mcp)](https://github.com/ayanshulife/lifeastroapi-mcp/releases)
 
-**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 320 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
+**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 321 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
 
 LifeAstroAPI is a REST [astrology API](https://lifeastroapi.com/apis/) for Vedic astrology, panchang, Hindu festivals, kundli, muhurat, numerology and Western charts. Free tier: 1,500 credits a month, no card — [get a key](https://lifeastroapi.com/signup/).
 
@@ -154,7 +154,7 @@ Any MCP-aware client supports the same shape — `command` + `env` with the abso
 
 ## Tools
 
-The server exposes **320 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
+The server exposes **321 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
 
 | Domain | Tools | Examples |
 |---|---|---|
@@ -192,7 +192,7 @@ The data tools (`chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sens
 
 The Vedic tools answer in the language you ask for: **English (default), Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam, Gujarati and Bengali**. Names (planets, signs, nakshatras, tithis, festivals), labels, notes and the interpretation text all come back in that language. Punjabi returns names and terms in the language; longer text is still English.
 
-- 188 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
+- 189 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
 - 25 Vedic tools have no language input because their answer is only numbers, times and ids (for example `panchang_rahu_kaal`, `panchang_sunrise_sunset`, `ashtakavarga_sarva`, `transit_windows`, `chart_yogas`).
 - Ids stay in English in every language (`sun` … `ketu`, rule ids, `sign_index`, classical source citations), so code that reads them does not change.
 - Western astrology, Tarot, geo and catalog tools are English. The seven `western_narrative_*` tools also answer in Hindi and Marathi (`lang`: `hi`, `mr`).
@@ -232,7 +232,7 @@ make fmt vet
 make build
 
 # Cross-compile for all release platforms
-make build-all VERSION=0.12.0
+make build-all VERSION=0.13.0
 
 # Call every tool against the real API (needs a key; spends credits).
 # Reports cost 500-8000 credits each, so they are skipped unless asked for.
@@ -245,7 +245,7 @@ LIFEASTRO_API_KEY=dv_live_... LIFEASTRO_LIVE_LOCALE=gu make live
 
 ## Roadmap
 
-- **v0.12 (current):** Local stdio MCP server, 320 tools, 188 of them answer in 8 languages, every tool verified against the live API (`make live`)
+- **v0.13 (current):** Local stdio MCP server, 321 tools, 189 of them answer in 10 languages, every tool verified against the live API (`make live`); adds KP horary (1–249)
 - **v1.0 (planned):** Stable tool surface; semantic versioning kicks in
 - **Remote HTTP MCP (separate project):** Hosted MCP endpoint at `mcp.lifeastroapi.com` for ChatGPT and web/mobile MCP clients — tracked separately from this repo
 
