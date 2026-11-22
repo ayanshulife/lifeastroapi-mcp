@@ -168,7 +168,7 @@ func registerLalKitabDashaCurrent(s *mcp.Server, c *apiClient) {
 // API-wide documented param).
 type RemedyByIDLocaleInput struct {
 	ID     string `json:"id" jsonschema:"remedy item ID — discover IDs via the remedy list tools"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func (in RemedyByIDLocaleInput) toQuery() url.Values {
@@ -212,7 +212,7 @@ func registerRemedyYantraByID(s *mcp.Server, c *apiClient) {
 // LalKitabRemedyListInput filters the Lal Kitab remedy catalog.
 type LalKitabRemedyListInput struct {
 	Planet string `json:"planet,omitempty" jsonschema:"optional planet filter in English (sun, moon, mars, mercury, jupiter, venus, saturn, rahu, ketu)"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func registerRemedyLalKitabList(s *mcp.Server, c *apiClient) {
@@ -236,7 +236,7 @@ func registerRemedyLalKitabList(s *mcp.Server, c *apiClient) {
 type LalKitabRemedyLookupInput struct {
 	Planet string `json:"planet" jsonschema:"planet in English (sun, moon, mars, mercury, jupiter, venus, saturn, rahu, ketu)"`
 	House  string `json:"house" jsonschema:"Lal Kitab house number 1-12"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func registerRemedyLalKitabLookup(s *mcp.Server, c *apiClient) {

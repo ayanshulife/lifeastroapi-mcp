@@ -55,7 +55,7 @@ func registerChartAshtakvargaPlanet(s *mcp.Server, c *apiClient) {
 
 type NarrativeReferenceInput struct {
 	Family string `json:"family" jsonschema:"glossary family to read, e.g. yoga, dosha, argala — the short name, or a full rule prefix such as vedic.L1.yoga"`
-	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Locale string `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func registerNarrativeReference(s *mcp.Server, c *apiClient) {

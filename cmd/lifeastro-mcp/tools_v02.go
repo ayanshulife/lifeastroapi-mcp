@@ -459,7 +459,7 @@ func registerVarshaphalChart(s *mcp.Server, c *apiClient) {
 type NumerologyFullInput struct {
 	Name string `json:"name,omitempty" jsonschema:"full name as written on official documents (skipped if computing DOB-only numbers)"`
 	Dob  string `json:"dob" jsonschema:"date of birth in YYYY-MM-DD"`
-	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Lang string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func registerNumerologyFull(s *mcp.Server, c *apiClient) {
@@ -543,7 +543,7 @@ type FestivalsMonthInput struct {
 	Lat         float64 `json:"lat,omitempty" jsonschema:"observer latitude in decimal degrees — festival dates depend on local sunrise/moonrise; defaults to New Delhi"`
 	Lon         float64 `json:"lon,omitempty" jsonschema:"observer longitude in decimal degrees; defaults to New Delhi"`
 	Tz          string  `json:"tz,omitempty" jsonschema:"IANA timezone for the civil dates (e.g. Asia/Kolkata, Europe/London); defaults to Asia/Kolkata"`
-	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Locale      string  `json:"locale,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 	MonthSystem string  `json:"month_system,omitempty" jsonschema:"month naming convention: 'purnimanta' (default, North India) or 'amanta' (South/West/East India). Dates never change."`
 }
 

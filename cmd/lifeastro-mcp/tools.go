@@ -381,8 +381,8 @@ func registerSadeSati(s *mcp.Server, c *apiClient) {
 
 type HoroscopeInput struct {
 	Rashi string `json:"rashi" jsonschema:"Moon sign / rashi name in English (Aries, Taurus, ..., Pisces) or Hindi (Mesha, Vrishabha, ...). Case-insensitive."`
-	Date  string `json:"date,omitempty" jsonschema:"optional YYYY-MM-DD; defaults to today UTC"`
-	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn (pa: names only)"`
+	Date  string `json:"date,omitempty" jsonschema:"optional YYYY-MM-DD; defaults to today in India (IST)"`
+	Lang  string `json:"lang,omitempty" jsonschema:"response language: en (default), hi, mr, te, ta, kn, ml, gu, bn, pa"`
 }
 
 func (h HoroscopeInput) toQuery() url.Values {
