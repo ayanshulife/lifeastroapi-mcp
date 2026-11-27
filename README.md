@@ -269,7 +269,7 @@ make fmt vet
 make build
 
 # Cross-compile for all release platforms
-make build-all VERSION=0.13.0
+make build-all VERSION=1.0.0
 
 # Call every tool against the real API (needs a key; spends credits).
 # Reports cost 500-8000 credits each, so they are skipped unless asked for.

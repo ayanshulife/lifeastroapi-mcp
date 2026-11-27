@@ -8,11 +8,11 @@
     "url": "https://github.com/ayanshulife/lifeastroapi-mcp",
     "source": "github"
   },
-  "version": "0.13.0",
+  "version": "1.0.0",
   "packages": [
     {
       "registryType": "oci",
-      "identifier": "ghcr.io/ayanshulife/lifeastroapi-mcp:0.13.0",
+      "identifier": "ghcr.io/ayanshulife/lifeastroapi-mcp:1.0.0",
       "transport": {
         "type": "stdio"
       },
