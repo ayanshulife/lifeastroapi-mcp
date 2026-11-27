@@ -56,6 +56,9 @@ lifeastro-mcp </dev/null 2>&1 | head -1
    chmod +x lifeastro-mcp-darwin-arm64
    sudo mv lifeastro-mcp-darwin-arm64 /usr/local/bin/lifeastro-mcp
 
+   # macOS only: a downloaded binary is quarantined; clear the flag or macOS refuses to run it
+   xattr -d com.apple.quarantine /usr/local/bin/lifeastro-mcp
+
    # Windows: rename to lifeastro-mcp.exe and add the folder to PATH
    ```
 
@@ -93,6 +96,13 @@ The free plan (1,500 credits a month, up to 500 a day) is enough to try most too
 ## Configuring your AI client
 
 The MCP server reads its credentials from environment variables that the AI client injects at subprocess spawn. Add the config block below to your client's MCP config file.
+
+**Use the real path of the binary in `command`.** Run `which lifeastro-mcp` and paste what it prints. The common paths:
+
+- `/opt/homebrew/bin/lifeastro-mcp`: Homebrew on Apple Silicon Macs
+- `/usr/local/bin/lifeastro-mcp`: Homebrew on Intel Macs, and the manual install above
+
+The examples below use `/usr/local/bin/lifeastro-mcp`; replace it if yours differs.
 
 ### Claude Desktop
 
@@ -152,6 +162,30 @@ Restart Codex and the tools become available in your session.
 
 Any MCP-aware client supports the same shape — `command` + `env` with the absolute path to the binary and the API key. Refer to your client's docs for the config-file location.
 
+### Fewer tools: `LIFEASTRO_MCP_TOOLS`
+
+By default the server lists every tool. The full list is large, and some clients cannot take it or lose context to it. Set `LIFEASTRO_MCP_TOOLS` in the same `env` block to a comma-separated list of tool-name prefixes, and only the tools whose names start with one of them are listed. A prefix can be a family (`panchang` keeps every `panchang_*` tool) or a whole tool name (`sade_sati`). Unset, the server lists all tools.
+
+Panchang, birth chart and the `milan_*` matching tools only (add whole names such as `match_making_score` for tools outside a family):
+
+```json
+"env": {
+  "LIFEASTRO_API_KEY": "dv_live_REPLACE_WITH_YOUR_KEY",
+  "LIFEASTRO_MCP_TOOLS": "panchang,chart,milan"
+}
+```
+
+Western astrology and tarot, plus two single tools:
+
+```json
+"env": {
+  "LIFEASTRO_API_KEY": "dv_live_REPLACE_WITH_YOUR_KEY",
+  "LIFEASTRO_MCP_TOOLS": "western,tarot,horoscope_daily,sade_sati"
+}
+```
+
+The server writes how many tools it kept to its log (stderr). If no tool name matches, it lists all tools and says so there.
+
 ## Tools
 
 The server exposes **321 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
@@ -203,11 +237,14 @@ The Vedic tools answer in the language you ask for: **English (default), Hindi, 
 **The tools don't appear in Claude Desktop.**
 Check the Claude Desktop logs at `~/Library/Logs/Claude/mcp*.log`. The most common errors:
 
-- `command not found` — the path in `command` is wrong. Use `which lifeastro-mcp` to find the absolute path and paste that.
+- `command not found` — the path in `command` is wrong. Use `which lifeastro-mcp` to find the absolute path and paste that (`/opt/homebrew/bin/lifeastro-mcp` on Apple Silicon Homebrew, `/usr/local/bin/lifeastro-mcp` on Intel).
 - `LIFEASTRO_API_KEY is not set` — the `env` block is missing or misspelt. The server still starts and lists its tools, but every tool call returns this message until the key is set.
 
-**A tool call returns `API 401: Unauthorized`.**
-Your API key is invalid, revoked, or expired. Generate a new one in the dashboard.
+**A tool call returns `API 401 unauthorized: unknown or revoked API key (request_id ...)`.**
+Your API key is wrong or revoked. Copy it again from the dashboard, or create a new one. If the message says `the value sent is not a LifeAstroAPI key`, the config still holds a placeholder, quotes or a cut-off key.
+
+**macOS says the binary "cannot be opened".**
+A binary downloaded from the Releases page is quarantined. Run `xattr -d com.apple.quarantine "$(which lifeastro-mcp)"`. Homebrew installs do not need this.
 
 **A tool call returns `API 429`.**
 You've hit your plan's rate limit or daily cap. Either upgrade or wait for the next reset window (free tier resets at midnight UTC).

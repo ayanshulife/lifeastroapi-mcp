@@ -50,6 +50,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -74,7 +75,8 @@ func main() {
 	// and exiting here made the server look broken to them. Instead we
 	// warn on stderr (visible in client logs) and every tool call returns
 	// a clear "set LIFEASTRO_API_KEY" error until a key is configured.
-	apiKey := os.Getenv("LIFEASTRO_API_KEY")
+	// Trimmed: a key pasted into a config file often carries a space or newline.
+	apiKey := strings.TrimSpace(os.Getenv("LIFEASTRO_API_KEY"))
 	if apiKey == "" {
 		fmt.Fprintln(os.Stderr, "lifeastro-mcp: LIFEASTRO_API_KEY is not set — tools are listed but every call will fail until it is.")
 		fmt.Fprintln(os.Stderr, `Add it to your MCP client config:  "env": { "LIFEASTRO_API_KEY": "dv_live_..." }`)
@@ -101,6 +103,20 @@ func main() {
 	// Register all tools. Each registerXxx call wires one tool with
 	// schema-inferred input. See tools.go.
 	registerAllTools(server, client)
+
+	// Optional: LIFEASTRO_MCP_TOOLS="panchang,chart,milan" keeps only the
+	// tools whose names start with one of those prefixes. See toolfilter.go.
+	if prefixes := parseToolFilter(os.Getenv("LIFEASTRO_MCP_TOOLS")); len(prefixes) > 0 {
+		kept, total, err := limitTools(context.Background(), server, prefixes)
+		switch {
+		case err != nil:
+			fmt.Fprintf(os.Stderr, "lifeastro-mcp: LIFEASTRO_MCP_TOOLS ignored: %v\n", err)
+		case kept == total:
+			fmt.Fprintf(os.Stderr, "lifeastro-mcp: LIFEASTRO_MCP_TOOLS matched no tool names; all %d tools are listed.\n", total)
+		default:
+			fmt.Fprintf(os.Stderr, "lifeastro-mcp: LIFEASTRO_MCP_TOOLS: %d of %d tools listed.\n", kept, total)
+		}
+	}
 
 	// stdio transport: the AI client spawns us as a subprocess and
 	// talks to us over stdin/stdout. Signal handling shuts us down
