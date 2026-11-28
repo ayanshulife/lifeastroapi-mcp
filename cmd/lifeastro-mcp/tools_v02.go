@@ -396,7 +396,7 @@ type MuhurtaNaamkaranInput struct {
 func registerMuhurtaVivah(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_vivah",
-		Description: "Score how auspicious a specific date (and optional time) is for a wedding (vivah) at a location — returns a 0-100 score, a grade, and the factor-by-factor breakdown (tithi, vara, nakshatra, Sun sign, Guru/Shukra strength, Rahu Kaal). Evaluates ONE date per call; to search a date range for the best wedding dates use muhurta_best_time with purpose=vivah. Use for 'is 20 November good for a wedding', 'check this vivah date'.",
+		Description: "Score how auspicious a specific date (and optional time) is for a wedding (vivah) at a location — returns a 0-100 score, a grade, and the factor-by-factor breakdown (tithi, vara, nakshatra, Sun sign, Guru/Shukra strength, Rahu Kaal). prohibited_by lists the classical prohibitions that apply (Guru or Shukra asta, adhika masa, Bhadra); when it is not empty the grade is inauspicious and is_acceptable is false whatever the score. Evaluates ONE date per call; to search a date range for the best wedding dates use muhurta_best_time with purpose=vivah. Use for 'is 20 November good for a wedding', 'check this vivah date'.",
 		Title:       "Vivah (Wedding) Muhurta",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaDateInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/muhurta/vivah", in.toQuery())
@@ -406,7 +406,7 @@ func registerMuhurtaVivah(s *mcp.Server, c *apiClient) {
 func registerMuhurtaNaamkaran(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_naamkaran",
-		Description: "Score how auspicious a specific date (and optional time) is for a baby's naming ceremony (naamkaran), given the child's birth date — returns a 0-100 score, a grade, days since birth, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time. Use for 'is this date good for naamkaran', 'naming ceremony muhurta check'.",
+		Description: "Score how auspicious a specific date (and optional time) is for a baby's naming ceremony (naamkaran), given the child's birth date — returns a 0-100 score, a grade, days since birth, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time with purpose=naamkaran and birth_date. Use for 'is this date good for naamkaran', 'naming ceremony muhurta check'.",
 		Title:       "Naamkaran Muhurta",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaNaamkaranInput) (*mcp.CallToolResult, any, error) {
 		q := in.MuhurtaDateInput.toQuery()
@@ -415,13 +415,26 @@ func registerMuhurtaNaamkaran(s *mcp.Server, c *apiClient) {
 	})
 }
 
+// MuhurtaBestTimeInput is the search window plus what the windows are
+// scored for. The API defaults purpose to general.
+type MuhurtaBestTimeInput struct {
+	MuhurtaWindowInput
+	Purpose   string `json:"purpose,omitempty" jsonschema:"optional event the windows are scored for: vivah, graha_pravesh, naamkaran, vyapar, yatra, vahan, bhoomi_pujan or general (default)"`
+	Direction string `json:"direction,omitempty" jsonschema:"optional direction of travel, used only with purpose=yatra for the Disha Shool check: N, NE, E, SE, S, SW, W or NW (full names such as north are also accepted); leave out for no direction check"`
+	BirthDate string `json:"birth_date,omitempty" jsonschema:"optional date of birth, YYYY-MM-DD: the child's birth date with purpose=naamkaran"`
+}
+
 func registerMuhurtaBestTime(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_best_time",
-		Description: "Find the highest-scoring muhurta window across a date range using a balanced scoring of tithi, nakshatra, vara, choghadiya, and Rahu Kaal exclusion. General-purpose 'when is the best time' query when no specific ceremony type applies. Use for 'best time this week', 'auspicious moment'.",
+		Description: "Find the highest-scoring muhurta windows across a date range of up to 31 days for one purpose: vivah (wedding), graha_pravesh (housewarming), naamkaran (naming; pass birth_date), vyapar (business start), yatra (journey; optional direction), vahan (vehicle purchase), bhoomi_pujan (ground-breaking) or general (default). Each purpose is scored with the rules of its own muhurta tool. A moment under a classical prohibition of that purpose (its prohibited_by is not empty: Guru or Shukra asta, adhika masa, Bhadra) is never returned, so fewer windows, or none, can come back. Use for 'best time this week', 'best wedding dates in June', 'good day to buy a car this month', 'auspicious moment'.",
 		Title:       "Best-Time Muhurta",
-	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaWindowInput) (*mcp.CallToolResult, any, error) {
-		return callPassthrough(ctx, c, "/v1/muhurta/best-time", in.toQuery())
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaBestTimeInput) (*mcp.CallToolResult, any, error) {
+		q := in.MuhurtaWindowInput.toQuery()
+		setIf(q, "purpose", lowerTrim(in.Purpose))
+		setIf(q, "direction", in.Direction)
+		setIf(q, "birth_date", in.BirthDate)
+		return callPassthrough(ctx, c, "/v1/muhurta/best-time", q)
 	})
 }
 

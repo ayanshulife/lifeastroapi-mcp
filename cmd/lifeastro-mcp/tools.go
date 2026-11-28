@@ -133,6 +133,11 @@ func registerAllTools(server *mcp.Server, client *apiClient) {
 	registerV12Tools(server, client)
 	registerV13Tools(server, client)
 
+	// v1.1 — 11 tools: Ashtottari dasha (full, current), Jaimini chart data
+	// (arudha padas, upapada, argala) and six muhurta validators (vahan,
+	// bhoomi pujan, upanayan, annaprashan, vidyarambh, karnavedha).
+	registerV14Tools(server, client)
+
 	// v0.7 — 60 additional tools: vedic narrative (32: career-outlook/
 	// dasha-phal/dasha-tree-phal/doshas/finance-outlook/horoscope-daily-
 	// by-lagna/by-moon/tamil/weekly-by-lagna/by-moon/house-lord/house-lords-

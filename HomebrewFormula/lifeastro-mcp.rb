@@ -30,28 +30,28 @@
 class LifeastroMcp < Formula
   desc "LifeAstroAPI MCP server — 320 Vedic + Western astrology tools for Claude Desktop, Cursor, Continue"
   homepage "https://github.com/ayanshulife/lifeastroapi-mcp"
-  version "0.11.0"
+  version "1.0.0"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-darwin-arm64"
-      sha256 "43e55f979c2b443d5671909971b58e53ad877050c1b8148aed70aca3331dbf7b"
+      sha256 "e404feeae298e1cf66476f8102ded5a8d53b7170eed27f9f9659d603520a8a28"
     end
     on_intel do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-darwin-amd64"
-      sha256 "fb6ee6ea731129de207c322220d0e70e45c8f0bbe2818a0e4fad49c93594b3af"
+      sha256 "3907e064a463b5d9ccd8cc57095712aaf4f2fc5ec1a1980f2be7e4c798731149"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-linux-arm64"
-      sha256 "b46acc699ac1a9c56aaf4726e3788eb214cba4f99233598bc1e8936ac4863c37"
+      sha256 "2b050c15afbd67118199edee3045f062384c40ffd61ddc11dcdddfb32b6b8afc"
     end
     on_intel do
       url "https://github.com/ayanshulife/lifeastroapi-mcp/releases/download/v#{version}/lifeastro-mcp-linux-amd64"
-      sha256 "bd96f4d4c2fc48a31930b226f0ef8d6f948591e230671d3f97ced7d8f8409fe6"
+      sha256 "a95a9d5fcc05da29794df018c3fd124d47a81912f70171b917209a43f92e3c37"
     end
   end
 

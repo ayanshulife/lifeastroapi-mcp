@@ -4,7 +4,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/ayanshulife/lifeastroapi-mcp.svg)](https://pkg.go.dev/github.com/ayanshulife/lifeastroapi-mcp)
 [![Release](https://img.shields.io/github/v/release/ayanshulife/lifeastroapi-mcp)](https://github.com/ayanshulife/lifeastroapi-mcp/releases)
 
-**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 321 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
+**Model Context Protocol (MCP) server for [LifeAstroAPI](https://lifeastroapi.com)** — exposes 332 Vedic & Western astrology tools to AI assistants like Claude Desktop, Cursor, Continue.dev, and Codex CLI.
 
 LifeAstroAPI is a REST [astrology API](https://lifeastroapi.com/apis/) for Vedic astrology, panchang, Hindu festivals, kundli, muhurat, numerology and Western charts. Free tier: 1,500 credits a month, no card — [get a key](https://lifeastroapi.com/signup/).
 
@@ -188,25 +188,25 @@ The server writes how many tools it kept to its log (stderr). If no tool name ma
 
 ## Tools
 
-The server exposes **321 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
+The server exposes **332 tools** across Vedic and Western astrology. The full list with descriptions is at [lifeastroapi.com/mcp](https://lifeastroapi.com/mcp/).
 
 | Domain | Tools | Examples |
 |---|---|---|
 | Panchang | 29 | `panchang_abhijit`, `panchang_advanced`, `panchang_amrit_kalam`, `panchang_basic` |
-| Birth chart (Vedic) | 26 | `chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sensitivity`, `chart_ascendant` |
+| Birth chart (Vedic) | 29 | `chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_arudha_padas`, `chart_argala` |
 | Ashtakavarga | 4 | `ashtakavarga_bhinna`, `ashtakavarga_kaksha`, `ashtakavarga_sarva`, `ashtakavarga_transit_score` |
-| Dasha | 14 | `dasha_char_antardashas`, `dasha_char_current`, `dasha_char_full`, `dasha_char_major` |
+| Dasha | 16 | `dasha_current`, `dasha_ashtottari_full`, `dasha_yogini_full`, `dasha_char_full` |
 | Compatibility (Milan) | 16 | `milan_summary`, `milan_overlay`, `milan_dasha_sync`, `match_making_score`, `ashtakoota_breakdown` |
-| Muhurta | 11 | `muhurta_best_time`, `muhurta_chandra_bala`, `muhurta_graha_pravesh`, `muhurta_naamkaran` |
+| Muhurta | 17 | `muhurta_best_time`, `muhurta_vivah`, `muhurta_vahan`, `muhurta_upanayan`, `muhurta_annaprashan` |
 | Transits & Sade Sati | 10 | `sade_sati`, `transit_sade_sati_windows`, `transit_windows`, `transit_double_transit`, `transit_small_panoti` |
-| Calendar, festivals & eclipses | 9 | `calendar_adhik_maas`, `calendar_month`, `calendar_ritu`, `calendar_samvatsara` |
+| Calendar, festivals & eclipses | 11 | `calendar_adhik_maas`, `calendar_month`, `calendar_ritu`, `calendar_samvatsara` |
 | Planet moments | 4 | `planet_combustion_window`, `planet_ingress`, `planet_retrograde_window`, `planet_speed` |
-| Prashna (horary) | 5 | `prashna_answer`, `prashna_arudha`, `prashna_chart`, `prashna_lagna_lord` |
+| Prashna (horary) | 6 | `prashna_answer`, `prashna_arudha`, `prashna_chart`, `prashna_lagna_lord` |
 | Numerology | 9 | `numerology_advanced`, `numerology_challenges`, `numerology_conductor`, `numerology_destiny` |
 | Varshaphal | 7 | `varshaphal_chart`, `varshaphal_harsha_bala`, `varshaphal_lord`, `varshaphal_mudda_dasha` |
 | Lal Kitab | 3 | `lalkitab_chart`, `lalkitab_dasha`, `lalkitab_dasha_current` |
 | Remedies | 11 | `remedy_for_graha`, `remedy_by_rule_id`, `remedy_daan_by_id`, `remedy_lalkitab_for_placement` |
-| Narrative interpretations | 37 | `narrative_career_outlook`, `narrative_dasha_phal`, `narrative_dasha_tree_phal`, `narrative_divisional` |
+| Narrative interpretations | 38 | `narrative_career_outlook`, `narrative_dasha_phal`, `narrative_dasha_tree_phal`, `narrative_divisional` |
 | Horoscopes | 3 | `horoscope_daily`, `horoscope_monthly`, `horoscope_weekly` |
 | Reports | 12 | `report_dasha_analysis`, `report_horoscope_daily`, `report_horoscope_monthly`, `report_horoscope_weekly` |
 | Tarot | 5 | `tarot_card`, `tarot_cards`, `tarot_daily`, `tarot_spread` |
@@ -220,13 +220,14 @@ The data tools (`chart_kundli_facts`, `chart_yogas`, `chart_doshas`, `chart_sens
 
 - Tools about "today" (panchang, transits, prashna, planet moments, calendar) take an optional `date`. Leave it out and the server sends today's date in the timezone you gave.
 - Tools that need a birth chart **and** a moment to evaluate (transits to a chart, Sade Sati, tara bala, personalised horoscopes) take the birth data as `date`/`time`/`tz` and the moment as the optional `on_date`.
-- The per-purpose muhurta tools (`muhurta_vivah`, `muhurta_graha_pravesh`, …) score **one date** per call. To search a range for the best dates, use `muhurta_best_time`.
+- The per-purpose muhurta tools (`muhurta_vivah`, `muhurta_graha_pravesh`, …) score **one date** per call. To search a range for the best dates, use `muhurta_best_time` with a `purpose` (vivah, graha_pravesh, naamkaran, vyapar, yatra, vahan, bhoomi_pujan or general).
+- A muhurta score comes with `prohibited_by`: the classical prohibitions that apply to that rite (Guru or Shukra asta, adhika masa, Bhadra, Hari Shayana, Dakshinayana). When it is not empty the grade is `inauspicious` and `is_acceptable` is false whatever the score, and `muhurta_best_time` never returns such a moment.
 
 ### Languages
 
 The Vedic tools answer in the language you ask for: **English (default), Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam, Gujarati, Bengali and Punjabi**. Names (planets, signs, nakshatras, tithis, festivals), labels, notes and the interpretation text all come back in that language.
 
-- 189 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
+- 200 Vedic tools take an optional language input — `locale` on the data tools (panchang, calendar, festivals, eclipses, chart, dasha, milan, muhurta, transits, prashna, varshaphal, ashtakavarga, Lal Kitab) and `lang` on the horoscope, numerology, report and narrative tools. Values: `en`, `hi`, `mr`, `te`, `ta`, `kn`, `ml`, `gu`, `bn`, `pa`. The assistant normally sets it from the language of the conversation.
 - 25 Vedic tools have no language input because their answer is only numbers, times and ids (for example `panchang_rahu_kaal`, `panchang_sunrise_sunset`, `ashtakavarga_sarva`, `transit_windows`, `chart_yogas`).
 - Ids stay in English in every language (`sun` … `ketu`, rule ids, `sign_index`, classical source citations), so code that reads them does not change.
 - Western astrology, Tarot, geo and catalog tools are English. The seven `western_narrative_*` tools also answer in Hindi and Marathi (`lang`: `hi`, `mr`).
@@ -269,7 +270,7 @@ make fmt vet
 make build
 
 # Cross-compile for all release platforms
-make build-all VERSION=1.0.0
+make build-all VERSION=1.1.0
 
 # Call every tool against the real API (needs a key; spends credits).
 # Reports cost 500-8000 credits each, so they are skipped unless asked for.
@@ -282,8 +283,8 @@ LIFEASTRO_API_KEY=dv_live_... LIFEASTRO_LIVE_LOCALE=gu make live
 
 ## Roadmap
 
-- **v0.13 (current):** Local stdio MCP server, 321 tools, 189 of them answer in 10 languages, every tool verified against the live API (`make live`); adds KP horary (1–249)
-- **v1.0 (planned):** Stable tool surface; semantic versioning kicks in
+- **v1.1 (current):** Local stdio MCP server, 332 tools, 200 of them answer in 10 languages; adds Ashtottari dasha, Jaimini arudha padas, Upapada and argala, and six muhurta tools (vahan, bhoomi pujan, upanayan, annaprashan, vidyarambh, karnavedha)
+- **v1.0:** Stable tool surface; semantic versioning from here on
 - **Remote HTTP MCP (separate project):** Hosted MCP endpoint at `mcp.lifeastroapi.com` for ChatGPT and web/mobile MCP clients — tracked separately from this repo
 
 ## License

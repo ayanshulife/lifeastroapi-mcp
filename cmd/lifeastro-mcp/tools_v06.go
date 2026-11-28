@@ -589,7 +589,7 @@ func registerMuhurtaChandraBala(s *mcp.Server, c *apiClient) {
 func registerMuhurtaGrahaPravesh(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_graha_pravesh",
-		Description: "Score how auspicious a specific date (and optional time) is for a housewarming (griha pravesh) at a location — returns a 0-100 score, a grade, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time. Use for 'is this date good for griha pravesh', 'housewarming muhurta check'.",
+		Description: "Score how auspicious a specific date (and optional time) is for a housewarming (griha pravesh) at a location — returns a 0-100 score, a grade, and the factor breakdown. prohibited_by lists the classical prohibitions that apply (Guru or Shukra asta, adhika masa); when it is not empty the grade is inauspicious and is_acceptable is false whatever the score. Evaluates ONE date per call; to search a range use muhurta_best_time with purpose=graha_pravesh. Use for 'is this date good for griha pravesh', 'housewarming muhurta check'.",
 		Title:       "Griha Pravesh Muhurta",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaDateInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/muhurta/graha-pravesh", in.toQuery())
@@ -655,20 +655,29 @@ func registerMuhurtaTaraBala(s *mcp.Server, c *apiClient) {
 func registerMuhurtaVyapar(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_vyapar",
-		Description: "Score how auspicious a specific date (and optional time) is for starting a business or opening a shop (vyapar) at a location — returns a 0-100 score, a grade, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time. Use for 'is this date good to open my shop', 'business start muhurta check'.",
+		Description: "Score how auspicious a specific date (and optional time) is for starting a business or opening a shop (vyapar) at a location — returns a 0-100 score, a grade, and the factor breakdown. Evaluates ONE date per call; to search a range use muhurta_best_time with purpose=vyapar. Use for 'is this date good to open my shop', 'business start muhurta check'.",
 		Title:       "Vyapar (Business) Muhurta",
 	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaDateInput) (*mcp.CallToolResult, any, error) {
 		return callPassthrough(ctx, c, "/v1/muhurta/vyapar", in.toQuery())
 	})
 }
 
+// MuhurtaYatraInput adds the optional direction of travel. It has no
+// default: without it the API makes no Disha Shool check.
+type MuhurtaYatraInput struct {
+	MuhurtaDateInput
+	Direction string `json:"direction,omitempty" jsonschema:"optional direction of travel: N, NE, E, SE, S, SW, W or NW (full names such as north or south-east are also accepted); with it the weekday's Disha Shool is checked, without it there is no direction check"`
+}
+
 func registerMuhurtaYatra(s *mcp.Server, c *apiClient) {
 	addLocalizedTool(s, &mcp.Tool{
 		Name:        "muhurta_yatra",
-		Description: "Score how auspicious a specific date (and optional time) is for starting a journey (yatra) from a location — returns a 0-100 score, a grade, and the factor breakdown including disha shool. Evaluates ONE date per call. Use for 'is this a good day to travel', 'yatra muhurta check'.",
+		Description: "Score how auspicious a specific date (and optional time) is for starting a journey (yatra) from a location — returns a 0-100 score, a grade, and the factor breakdown; with a direction it also checks the weekday's disha shool. Evaluates ONE date per call; to search a range use muhurta_best_time with purpose=yatra. Use for 'is this a good day to travel', 'can I travel north on Monday', 'yatra muhurta check'.",
 		Title:       "Yatra (Travel) Muhurta",
-	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaDateInput) (*mcp.CallToolResult, any, error) {
-		return callPassthrough(ctx, c, "/v1/muhurta/yatra", in.toQuery())
+	}, func(ctx context.Context, _ *mcp.CallToolRequest, in MuhurtaYatraInput) (*mcp.CallToolResult, any, error) {
+		q := in.MuhurtaDateInput.toQuery()
+		setIf(q, "direction", in.Direction)
+		return callPassthrough(ctx, c, "/v1/muhurta/yatra", q)
 	})
 }
 

@@ -76,7 +76,7 @@ func firstText(t *testing.T, res *mcp.CallToolResult) string {
 // expectedToolCount is the source of truth for "how many tools should
 // the MCP server expose right now". Bump this when adding a tool;
 // the registration test below catches accidental additions or removals.
-const expectedToolCount = 321
+const expectedToolCount = 332
 
 func TestListTools_AllRegistered(t *testing.T) {
 	t.Parallel()
@@ -420,6 +420,18 @@ func TestListTools_AllRegistered(t *testing.T) {
 		"meta_vedic_narrative_axes": true,
 		"meta_ayanamsas":            true,
 		"meta_endpoints":            true,
+		// v1.1 (11 tools)
+		"dasha_ashtottari_full":    true,
+		"dasha_ashtottari_current": true,
+		"chart_arudha_padas":       true,
+		"chart_upapada":            true,
+		"chart_argala":             true,
+		"muhurta_vahan":            true,
+		"muhurta_bhoomi_pujan":     true,
+		"muhurta_upanayan":         true,
+		"muhurta_annaprashan":      true,
+		"muhurta_vidyarambh":       true,
+		"muhurta_karnavedha":       true,
 	}
 	if got, want := len(wantNames), expectedToolCount; got != want {
 		t.Errorf("test wantNames map has %d entries, want %d (test bookkeeping out of sync)", got, want)
@@ -1155,8 +1167,8 @@ func TestLanguageInputs(t *testing.T) {
 			}
 		}
 	}
-	if vedic != 189 || western != 7 {
-		t.Errorf("language inputs: %d Vedic + %d Western tools, want 189 + 7", vedic, western)
+	if vedic != 200 || western != 7 {
+		t.Errorf("language inputs: %d Vedic + %d Western tools, want 200 + 7", vedic, western)
 	}
 }
 
@@ -1272,6 +1284,81 @@ func TestLanguageNotOnNumberOnlyTools(t *testing.T) {
 	for _, tl := range out.Tools {
 		if noLanguageTools[tl.Name] && strings.Contains(tl.Description, strings.TrimSpace(localizedNote)) {
 			t.Errorf("%s: description promises localized names", tl.Name)
+		}
+	}
+}
+
+// v1.1 tools: every route reads the chart or the event moment unprefixed;
+// options are forwarded only when set, so the API defaults apply (scheme 28,
+// exception parashari, no yatra direction, purpose general).
+func TestV14Tools_QueryMapping(t *testing.T) {
+	t.Parallel()
+	birth := map[string]any{"lat": 19.076, "lon": 72.8777, "date": "1990-01-15", "time": "10:30", "tz": "Asia/Kolkata"}
+	event := map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "date": "2027-02-10"}
+	with := func(base map[string]any, extra map[string]any) map[string]any {
+		out := map[string]any{}
+		for k, v := range base {
+			out[k] = v
+		}
+		for k, v := range extra {
+			out[k] = v
+		}
+		return out
+	}
+	cases := []struct {
+		tool, path string
+		args       map[string]any
+		want       map[string]string
+		absent     []string
+	}{
+		{"dasha_ashtottari_full", "/v1/dasha/ashtottari", with(birth, map[string]any{"depth": 2, "scheme": 27, "antar_start": "Next_Lord"}),
+			map[string]string{"date": "1990-01-15", "time": "10:30", "depth": "2", "scheme": "27", "antar_start": "next_lord"}, []string{"birth.date", "at"}},
+		{"dasha_ashtottari_full", "/v1/dasha/ashtottari", birth,
+			map[string]string{"date": "1990-01-15"}, []string{"depth", "scheme", "antar_start"}},
+		{"dasha_ashtottari_current", "/v1/dasha/ashtottari/current", with(birth, map[string]any{"at": "2027-01-15T00:00:00Z", "scheme": 28}),
+			map[string]string{"date": "1990-01-15", "at": "2027-01-15T00:00:00Z", "scheme": "28"}, []string{"depth", "antar_start"}},
+		{"chart_arudha_padas", "/v1/chart/arudha-padas", with(birth, map[string]any{"exception": "none", "scorpio_lord": "Ketu", "aquarius_lord": "rahu"}),
+			map[string]string{"date": "1990-01-15", "exception": "none", "scorpio_lord": "ketu", "aquarius_lord": "rahu"}, nil},
+		{"chart_upapada", "/v1/chart/upapada", birth,
+			map[string]string{"lat": "19.076", "tz": "Asia/Kolkata"}, []string{"exception", "scorpio_lord", "aquarius_lord"}},
+		{"chart_argala", "/v1/chart/argala", with(birth, map[string]any{"house": 10, "include_eighth": true, "node_reversal": "rahu_ketu", "vipareeta_min_malefics": 2}),
+			map[string]string{"house": "10", "include_eighth": "true", "node_reversal": "rahu_ketu", "vipareeta_min_malefics": "2"}, nil},
+		{"chart_argala", "/v1/chart/argala", birth,
+			map[string]string{"date": "1990-01-15"}, []string{"house", "include_eighth", "node_reversal", "vipareeta_min_malefics"}},
+		{"muhurta_vahan", "/v1/muhurta/vahan", event, map[string]string{"date": "2027-02-10", "tz": "Asia/Kolkata"}, []string{"time", "birth_date"}},
+		{"muhurta_bhoomi_pujan", "/v1/muhurta/bhoomi-pujan", with(event, map[string]any{"time": "09:15"}), map[string]string{"time": "09:15"}, nil},
+		{"muhurta_upanayan", "/v1/muhurta/upanayan", event, map[string]string{"date": "2027-02-10"}, nil},
+		{"muhurta_annaprashan", "/v1/muhurta/annaprashan", with(event, map[string]any{"birth_date": "2026-08-01", "sex": "Male"}),
+			map[string]string{"date": "2027-02-10", "birth_date": "2026-08-01", "sex": "male"}, nil},
+		{"muhurta_annaprashan", "/v1/muhurta/annaprashan", event, nil, []string{"birth_date", "sex"}},
+		{"muhurta_vidyarambh", "/v1/muhurta/vidyarambh", with(event, map[string]any{"birth_date": "2022-03-05"}), map[string]string{"birth_date": "2022-03-05"}, nil},
+		{"muhurta_karnavedha", "/v1/muhurta/karnavedha", event, map[string]string{"date": "2027-02-10"}, []string{"birth_date"}},
+		{"muhurta_yatra", "/v1/muhurta/yatra", event, map[string]string{"date": "2027-02-10"}, []string{"direction"}},
+		{"muhurta_yatra", "/v1/muhurta/yatra", with(event, map[string]any{"direction": "NE"}), map[string]string{"direction": "NE"}, nil},
+		{"muhurta_best_time", "/v1/muhurta/best-time", map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "start_date": "2027-02-01", "end_date": "2027-02-28", "purpose": "Yatra", "direction": "N"},
+			map[string]string{"start_date": "2027-02-01", "end_date": "2027-02-28", "purpose": "yatra", "direction": "N"}, []string{"birth_date"}},
+		{"muhurta_best_time", "/v1/muhurta/best-time", map[string]any{"lat": 19.076, "lon": 72.8777, "tz": "Asia/Kolkata", "start_date": "2027-02-01", "end_date": "2027-02-28"},
+			map[string]string{"start_date": "2027-02-01"}, []string{"purpose", "direction", "birth_date"}},
+	}
+	for _, tc := range cases {
+		session, log := newTestServer(t, 200, `{}`)
+		res := callTool(t, session, tc.tool, tc.args)
+		if res.IsError {
+			t.Fatalf("%s: tool returned error: %s", tc.tool, firstText(t, res))
+		}
+		if log.paths[0] != tc.path {
+			t.Errorf("%s: path = %q, want %q", tc.tool, log.paths[0], tc.path)
+		}
+		q := log.queries[0]
+		for k, v := range tc.want {
+			if q.Get(k) != v {
+				t.Errorf("%s: %s = %q, want %q (query %v)", tc.tool, k, q.Get(k), v, q)
+			}
+		}
+		for _, k := range tc.absent {
+			if q.Has(k) {
+				t.Errorf("%s: %s should not be sent (query %v)", tc.tool, k, q)
+			}
 		}
 	}
 }

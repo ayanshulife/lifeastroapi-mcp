@@ -59,3 +59,21 @@ func TestToolFilter_UnsetOrNoMatchKeepsAll(t *testing.T) {
 		}
 	}
 }
+
+// The v1.1 tools belong to the existing families, so a family filter keeps them.
+func TestToolFilter_NewToolsInFamilies(t *testing.T) {
+	t.Parallel()
+	names, _, _ := filteredToolNames(t, "dasha,chart,muhurta")
+	got := map[string]bool{}
+	for _, n := range names {
+		got[n] = true
+	}
+	for _, n := range []string{
+		"dasha_ashtottari_full", "dasha_ashtottari_current", "chart_arudha_padas", "chart_upapada", "chart_argala",
+		"muhurta_vahan", "muhurta_bhoomi_pujan", "muhurta_upanayan", "muhurta_annaprashan", "muhurta_vidyarambh", "muhurta_karnavedha",
+	} {
+		if !got[n] {
+			t.Errorf("filter dasha,chart,muhurta dropped %s", n)
+		}
+	}
+}
